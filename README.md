@@ -1,2 +1,4 @@
 # LookWeibo
-我的新浪微博客户端
+我的第一个github项目
+
+使用sian提供的api写一个属于自己的Material design风格的微博客户端
