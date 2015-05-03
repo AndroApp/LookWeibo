@@ -1,11 +1,17 @@
-package com.shine.look.weibo;
+package com.shine.look.weibo.ui;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.shine.look.weibo.R;
 
+/**
+ * User:Shine
+ * Date:2015-05-03
+ * Description:主页面
+ */
 public class MainActivity extends ActionBarActivity {
 
     @Override
