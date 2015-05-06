@@ -12,9 +12,31 @@ public class Constants {
     //应用的回调页
     public static final String REDIRECT_URL = "http://www.sina.com";
     // 应用申请的高级权限
-    public static final String SCOPE = "email,direct_messages_read,direct_messages_write,"
-            + "friendships_groups_read,friendships_groups_write,statuses_to_me_read,"
-            + "follow_app_official_microblog," + "invitation_write";
+    public static final String SCOPE =
+            "email,direct_messages_read,direct_messages_write,"
+                    + "friendships_groups_read,friendships_groups_write,statuses_to_me_read,"
+                    + "follow_app_official_microblog," + "invitation_write";
+
+    public static final long MINUTES_IN_MILLIS = 1000 * 60;//一分钟的毫秒数
+    public static final long HOUR_IN_MILLIS = MINUTES_IN_MILLIS * 60;//一小时的毫秒数
+    public static final long DAY_IN_MILLIS = HOUR_IN_MILLIS * 24;//一天的毫秒数
+
+    /**
+     * 微博接口url路径
+     */
+    public static final String URL_HOME_PATH = "https://api.weibo.com/2/statuses/home_timeline.json?";    //首页路径
+
+    /*
+     *接口传递参数名
+     */
+    public static final String ARG_ACCESS_TOKEN = "access_token";    //账号token
+    public static final String ARG_TRIM_USER = "trim_user";    //user字段开关
+    public static final String ARG_PAGE = "page";              //页码
+
+    /*
+     *接口传递的参数
+     */
+    public static final int TRIM_USER = 0;  // 0 -- 返回完整的user字段 , 1 -- 仅返回user_id
 
 }
 

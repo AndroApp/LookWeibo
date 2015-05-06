@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="ivUserProfile" type="id"/>
+    <item name="tvUserName" type="id"/>
+    <item name="tvCreatedTime" type="id"/>
+    <item name="tvSource" type="id"/>
+    <item name="tvText" type="id"/>
+</resources>
