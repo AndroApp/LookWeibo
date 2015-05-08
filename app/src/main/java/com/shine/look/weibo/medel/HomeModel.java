@@ -1,5 +1,7 @@
 package com.shine.look.weibo.medel;
 
+import android.app.Activity;
+
 import com.shine.look.weibo.bean.HomeInfo;
 import com.shine.look.weibo.http.RequestParams;
 import com.shine.look.weibo.utils.Constants;
@@ -11,14 +13,14 @@ import com.shine.look.weibo.utils.Constants;
  */
 public class HomeModel extends BaseModel {
 
-    private int mPage = 3;
+
+    public HomeModel(Activity activity) {
+        super(activity);
+    }
 
     @Override
     public void request() {
-        if (mPage == 1) {
-            setCache(true);
-        }
-        executeRequest(getRequest(HomeInfo.class));
+        executeRequest(HomeInfo.class);
     }
 
     @Override
@@ -26,12 +28,9 @@ public class HomeModel extends BaseModel {
         RequestParams params = new RequestParams();
         params.setPath(Constants.URL_HOME_PATH);
         params.put(Constants.ARG_ACCESS_TOKEN, mAccessToken.getToken());
-        params.put(Constants.ARG_PAGE, mPage);
+        params.put(Constants.ARG_PAGE, getPage());
         params.put(Constants.ARG_TRIM_USER, Constants.TRIM_USER);
         return params.getUrl();
     }
 
-    public void setPage(int page) {
-        mPage = page;
-    }
 }

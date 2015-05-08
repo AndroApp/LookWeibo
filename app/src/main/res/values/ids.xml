@@ -5,4 +5,5 @@
     <item name="tvCreatedTime" type="id"/>
     <item name="tvSource" type="id"/>
     <item name="tvText" type="id"/>
+    <item name="swipe_container" type="id"/>
 </resources>

@@ -3,9 +3,15 @@ package com.shine.look.weibo.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +41,11 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
 
     private final int avatarSize;
 
+    /**
+     * 最后一个进行动画的item的位置
+     */
+    private int mLastAnimatedPosition = -1;
+
     public HomeWeiboAdapter(Context context) {
         this.mContext = context;
         this.mData = new ArrayList<>();
@@ -49,10 +60,19 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
 
     @Override
     public void onBindViewHolder(HomeWeiboViewHolder holder, int position) {
+        runEnterAnimation(holder.itemView, position);
         Status statusBean = mData.get(position);
         holder.tvUserName.setText(statusBean.user.screen_name);
         holder.tvCreatedTime.setTextByDate(statusBean.created_at);
-        holder.tvSource.setText(Html.fromHtml(statusBean.source));
+        Spannable spannable = new SpannableString(Html.fromHtml(statusBean.source));
+        spannable.setSpan(new ForegroundColorSpan(0) {
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setUnderlineText(false);
+                ds.setColor(mContext.getResources().getColor(R.color.secondary_text));
+            }
+        }, 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.tvSource.setText(spannable);
         holder.tvText.setContextText(statusBean.text);
         Picasso picasso = Picasso.with(mContext);
         picasso.setIndicatorsEnabled(true);
@@ -63,6 +83,18 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
                 .into(holder.ivUserProfile);
     }
 
+    private void runEnterAnimation(View itemView, int position) {
+        if (position > mLastAnimatedPosition) {
+            mLastAnimatedPosition = position;
+            itemView.setTranslationY(Utils.getScreenHeight());
+            itemView.animate().translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
+        }
+    }
+
+
     @Override
     public int getItemCount() {
         return mData.size();
@@ -71,6 +103,11 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     public void addItems(List<Status> dataList) {
         mData.addAll(dataList);
         notifyDataSetChanged();
+    }
+
+    public void clear(int lastVisibleItemPosition) {
+        mData.clear();
+        mLastAnimatedPosition = lastVisibleItemPosition;
     }
 
     class HomeWeiboViewHolder extends RecyclerView.ViewHolder {

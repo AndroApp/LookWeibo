@@ -1,6 +1,7 @@
 package com.shine.look.weibo.medel;
 
-import com.android.volley.Request;
+import android.app.Activity;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -29,40 +30,54 @@ public abstract class BaseModel {
 
     protected OnRequestListener onRequestListener;
 
+    private int mPage = 1;
     /**
      * 是否缓存,只进行一次数据存储
      */
     private boolean isCache;
 
+    private boolean isDiskCache;
+
+    private Activity mActivity;
+
+    public BaseModel(Activity activity) {
+        this.mActivity = activity;
+        this.isDiskCache = true;
+    }
+
     public abstract void request();
 
-    public StringRequest getRequest(final Class clazz) {
-        String jsonStr = FileHelper.loadFile(getUrl());
-        if (jsonStr != null && !jsonStr.equals("")) {
-            onRequestListener.onSuccess(mGson.fromJson(jsonStr, clazz));
-            return null;
-        } else {
-            return new StringRequest(getUrl(), new Response.Listener<String>() {
-                @Override
-                public void onResponse(String json) {
-                    if (isCache) {
-                        isCache = false;
-                        FileHelper.saveFile(getUrl(), json);
-                    }
-                    if (onRequestListener != null) {
-                        onRequestListener.onSuccess(mGson.fromJson(json, clazz));
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    LogHelper.d(TAG, volleyError.toString());
-                    if (onRequestListener != null) {
-                        onRequestListener.onFailure(volleyError);
-                    }
-                }
-            });
+    public void executeRequest(final Class clazz) {
+        if (isDiskCache) {
+            String jsonStr = FileHelper.loadFile(getUrl());
+            if (isDiskCache && jsonStr != null && !jsonStr.equals("")) {
+                onRequestListener.onSuccess(mGson.fromJson(jsonStr, clazz));
+                return;
+            }
         }
+
+        StringRequest request = new StringRequest(getUrl(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String json) {
+                if (isCache) {
+                    isCache = false;
+                    FileHelper.saveFile(getUrl(), json);
+                }
+                if (onRequestListener != null) {
+                    onRequestListener.onSuccess(mGson.fromJson(json, clazz));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                LogHelper.d(TAG, volleyError.toString());
+                if (onRequestListener != null) {
+                    onRequestListener.onFailure(volleyError);
+                }
+            }
+        });
+        RequestManager.addRequest(request, mActivity);
+
     }
 
 
@@ -70,12 +85,6 @@ public abstract class BaseModel {
      * @return 请求的url，不能返回null
      */
     protected abstract String getUrl();
-
-    protected void executeRequest(Request<?> request) {
-        if (request != null) {
-            RequestManager.addRequest(request, this);
-        }
-    }
 
     public void setOnRequestListener(OnRequestListener onRequestListener) {
         this.onRequestListener = onRequestListener;
@@ -93,5 +102,25 @@ public abstract class BaseModel {
 
     public void setCache(boolean isCache) {
         this.isCache = isCache;
+    }
+
+    public boolean isDiskCache() {
+        return isDiskCache;
+    }
+
+    public void setDiskCache(boolean isDiskCache) {
+        this.isDiskCache = isDiskCache;
+    }
+
+    public void setPage(int page) {
+        setDiskCache(false);
+        if (page == 1) {
+            setCache(true);
+        }
+        mPage = page;
+    }
+
+    public int getPage() {
+        return mPage;
     }
 }

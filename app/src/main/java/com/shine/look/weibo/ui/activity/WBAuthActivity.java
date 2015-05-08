@@ -8,14 +8,11 @@ import android.widget.Toast;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.utils.AccessTokenKeeper;
 import com.shine.look.weibo.utils.Constants;
-import com.shine.look.weibo.utils.ToastHelper;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
-
-import java.util.regex.Pattern;
 
 import butterknife.OnClick;
 
@@ -51,19 +48,6 @@ public class WBAuthActivity extends BaseActivity {
     private void init() {
         mAuthInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
         mSsoHandler = new SsoHandler(this, mAuthInfo);
-        test();
-    }
-
-    private void test() {
-        String p = "\\s@\\w*\\s\\w*";
-        String s = " @gadsgasdgadsg adas";
-        if (Pattern.matches(p, s)) {
-            ToastHelper.show(s);
-        } else {
-            ToastHelper.show("什么鬼");
-        }
-
-
     }
 
     @Override

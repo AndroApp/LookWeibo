@@ -3,7 +3,6 @@ package com.shine.look.weibo.ui.activity;
 import android.support.v7.app.AppCompatActivity;
 
 import com.shine.look.weibo.http.RequestManager;
-import com.shine.look.weibo.medel.BaseModel;
 
 import butterknife.ButterKnife;
 
@@ -14,8 +13,6 @@ import butterknife.ButterKnife;
  */
 public class BaseActivity extends AppCompatActivity {
 
-    protected BaseModel mModel;
-
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
@@ -25,8 +22,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mModel != null) {
-            RequestManager.cancelAll(mModel);
-        }
+        RequestManager.cancelAll(this);
     }
 }

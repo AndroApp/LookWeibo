@@ -2,10 +2,14 @@ package com.shine.look.weibo.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Build;
 import android.view.Display;
 import android.view.WindowManager;
+
+import com.shine.look.weibo.WeiboApplication;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -28,9 +32,9 @@ public class Utils {
 
     }
 
-    public static int getScreenHeight(Context c) {
+    public static int getScreenHeight() {
         if (screenHeight == 0) {
-            WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+            WindowManager wm = (WindowManager) WeiboApplication.getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -40,9 +44,9 @@ public class Utils {
         return screenHeight;
     }
 
-    public static int getScreenWidth(Context c) {
+    public static int getScreenWidth() {
         if (screenWidth == 0) {
-            WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+            WindowManager wm = (WindowManager) WeiboApplication.getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -80,4 +84,47 @@ public class Utils {
         return md5;
     }
 
+    /**
+     * 获取图片名称获取图片的资源id的方法
+     *
+     * @param imageName
+     * @return
+     */
+    public static int getResourceByImageName(String imageName) {
+        if (imageName == null) {
+            return 0;
+        }
+        Context ctx = WeiboApplication.getContext();
+        int resId = ctx.getResources().getIdentifier(imageName, "mipmap", ctx.getPackageName());
+        return resId;
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options,
+                                            int reqWidth, int reqHeight) {
+        // 源图片的高度和宽度
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            // 计算出实际宽高和目标宽高的比率
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            // 选择宽和高中最小的比率作为inSampleSize的值，这样可以保证最终图片的宽和高
+            // 一定都会大于等于目标的宽和高。
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+        // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+        // 调用上面定义的方法计算inSampleSize值
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        // 使用获取到的inSampleSize值再次解析图片
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
 }
