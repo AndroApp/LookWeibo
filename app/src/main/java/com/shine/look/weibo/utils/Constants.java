@@ -31,13 +31,14 @@ public class Constants {
      *接口传递参数名
      */
     public static final String ARG_ACCESS_TOKEN = "access_token";    //账号token
-    public static final String ARG_TRIM_USER = "trim_user";    //user字段开关
-    public static final String ARG_PAGE = "page";              //页码
+    public static final String ARG_COUNT = "count";                 //页记录条数
+    public static final String ARG_PAGE = "page";                   //页码
+    public static final String ARG_MAX_ID = "max_id";              //指定获取的微博范围
 
     /*
      *接口传递的参数
      */
-    public static final int TRIM_USER = 0;  // 0 -- 返回完整的user字段 , 1 -- 仅返回user_id
+    public static final int PAGE_COUNT = 40;
 
 }
 

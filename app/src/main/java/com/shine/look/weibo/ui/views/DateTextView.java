@@ -7,13 +7,10 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.shine.look.weibo.R;
-import com.shine.look.weibo.utils.Constants;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * User:Shine
@@ -22,22 +19,44 @@ import java.util.Locale;
  */
 public class DateTextView extends TextView {
 
+    private Calendar mCalendar;
+
+    private int mCurrentYear;
+    private int mCurrentDay;
+
+    private String mYearFormatStr;
+    private String mMonthFormatStr;
+
 
     public DateTextView(Context context) {
         super(context);
+        init();
     }
 
     public DateTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public DateTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public DateTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    private void init() {
+        mCalendar = Calendar.getInstance();
+        //当前年份
+        mCurrentYear = mCalendar.get(Calendar.YEAR);
+        mCurrentDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+        mYearFormatStr = "yyyy" + getResources().getString(R.string.year) + "MM" + getResources().getString(R.string.month) + "dd HH:mm";
+        mMonthFormatStr = "MM" + getResources().getString(R.string.month) + "dd HH:mm";
+
     }
 
     public void setTextByDate(String dateStr) {
@@ -45,57 +64,39 @@ public class DateTextView extends TextView {
     }
 
     public String dateFormat(String dateStr) {
-        String dateFormat = null;
-        //用于将英文格式的日期转换为date
-        SimpleDateFormat usSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
-        //将date转换为中文格式的日期
-        SimpleDateFormat chSDF;
+        String dateFormat;
         try {
-            Date date = usSDF.parse(dateStr);
-            //进行日期判断
-            Calendar calendar = Calendar.getInstance();
-            //当前时间戳
-            long currentTime = calendar.getTimeInMillis();
-            //时间差
-            long diffTime = currentTime - date.getTime();
-            //当前年份
-            int currentYear = calendar.get(Calendar.YEAR);
-            //date的年份
-            calendar.setTimeInMillis(date.getTime());
-            int dateYear = calendar.get(Calendar.YEAR);
-            if (currentYear - dateYear > 0) {//大于1年
-                //格式'yyyy年MM月dd日 HH:MM'
-                StringBuffer sb = new StringBuffer();
-                sb.append("yyyy").append(getContext().getString(R.string.year)).append("MM")
-                        .append(getContext().getString(R.string.month)).append("dd")
-                        .append(getContext().getString(R.string.day)).append("HH:MM");
-                chSDF = new SimpleDateFormat(sb.toString(), Locale.CHINA);
-                dateFormat = chSDF.format(date);
-            } else if (diffTime > Constants.DAY_IN_MILLIS * 2) {//大于2天
-                //格式'MM月dd日 HH:MM'
-                StringBuffer sb = new StringBuffer();
-                sb.append("MM").append(getContext().getString(R.string.month)).append("dd")
-                        .append(getContext().getString(R.string.day)).append("HH:MM");
-                chSDF = new SimpleDateFormat(sb.toString());
-                dateFormat = chSDF.format(date);
-            } else if (diffTime > Constants.DAY_IN_MILLIS) {//大于1天
-                //格式'昨天 HH:MM'
-                chSDF = new SimpleDateFormat(getContext().getString(R.string.Yesterday) + "HH:MM");
-                dateFormat = chSDF.format(date);
-            } else if (diffTime > Constants.HOUR_IN_MILLIS) {//大于1小时
-                //格式 xx小时前
-                int hour = (int) (diffTime / Constants.HOUR_IN_MILLIS);
-                return hour + getContext().getString(R.string.hour_ago);
-            } else if (diffTime > Constants.MINUTES_IN_MILLIS * 2) {//大于2分钟
-                int minutes = (int) (diffTime / Constants.MINUTES_IN_MILLIS);
-                return minutes + getContext().getString(R.string.minutes_ago);
+            SimpleDateFormat sdf;
+            Date date = new Date(dateStr);
+            //获取是几年、几日、几小时、几分钟前发的微博
+            mCalendar.setTimeInMillis(date.getTime());
+            int dataYear = mCalendar.get(Calendar.YEAR);
+            int dateDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+            int diffYear = mCurrentYear - dataYear;
+            int diffDay = mCurrentDay - dateDay;
+            long diffTime = Long.valueOf((System.currentTimeMillis() - date.getTime()) / 1000);
+            long minuteTime = diffTime / 60;
+            long hourTime = minuteTime / 60;
+            if (diffTime < 0 || diffYear >= 1) {//大于等于1年
+                sdf = new SimpleDateFormat(mYearFormatStr);
+                dateFormat = sdf.format(date);
+            } else if (diffDay >= 2) {//大于等于2天
+                sdf = new SimpleDateFormat(mMonthFormatStr);
+                dateFormat = sdf.format(date);
+            } else if (diffDay == 1) {//昨天
+                sdf = new SimpleDateFormat("HH:mm");
+                dateFormat = getResources().getString(R.string.yesterday) + " " + sdf.format(date);
+            } else if (minuteTime >= 60) {//今天几小时前
+                dateFormat = hourTime + getResources().getString(R.string.hour_ago);
+            } else if (minuteTime >= 3) {//几分钟前
+                dateFormat = minuteTime + getResources().getString(R.string.minutes_ago);
             } else {
-                setTextColor(getContext().getResources().getColor(R.color.colorAccent));
-                return getContext().getString(R.string.just);
+                dateFormat = getResources().getString(R.string.just);
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            dateFormat = getResources().getString(R.string.unknown);
         }
+
         return dateFormat;
     }
 }

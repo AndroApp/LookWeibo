@@ -50,7 +50,7 @@ public abstract class BaseModel {
     public void executeRequest(final Class clazz) {
         if (isDiskCache) {
             String jsonStr = FileHelper.loadFile(getUrl());
-            if (isDiskCache && jsonStr != null && !jsonStr.equals("")) {
+            if (jsonStr != null && !jsonStr.equals("")) {
                 onRequestListener.onSuccess(mGson.fromJson(jsonStr, clazz));
                 return;
             }

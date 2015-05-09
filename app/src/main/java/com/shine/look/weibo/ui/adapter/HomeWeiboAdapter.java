@@ -27,6 +27,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 
 /**
  * User:Shine
@@ -35,52 +36,65 @@ import butterknife.InjectView;
  */
 public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.HomeWeiboViewHolder> {
 
+    private static final int VIEW_TYPE_DEFAULT = 1;
+    private static final int VIEW_TYPE_LOADING = 2;
+
     private List<Status> mData;
 
     private Context mContext;
 
-    private final int avatarSize;
+    private static final int mAvatarSize = 50;
+
+    private final LayoutInflater mInflater;
 
     /**
      * 最后一个进行动画的item的位置
      */
     private int mLastAnimatedPosition = -1;
 
+    private boolean isVisibleLoading;
+
     public HomeWeiboAdapter(Context context) {
         this.mContext = context;
         this.mData = new ArrayList<>();
-        avatarSize = Utils.dpToPx(50);
+        this.mInflater = LayoutInflater.from(context);
     }
 
     @Override
     public HomeWeiboViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rootView = LayoutInflater.from(mContext).inflate(R.layout.item_home_weibo, parent, false);
-        return new HomeWeiboViewHolder(rootView);
+        if (viewType == VIEW_TYPE_LOADING) {
+            View loadingView = mInflater.inflate(R.layout.layout_recyclerview_footer, parent, false);
+            return new HomeWeiboViewHolder(loadingView);
+        } else {
+            View rootView = mInflater.inflate(R.layout.item_home_weibo, parent, false);
+            return new HomeWeiboViewHolder(rootView);
+        }
     }
 
     @Override
     public void onBindViewHolder(HomeWeiboViewHolder holder, int position) {
         runEnterAnimation(holder.itemView, position);
-        Status statusBean = mData.get(position);
-        holder.tvUserName.setText(statusBean.user.screen_name);
-        holder.tvCreatedTime.setTextByDate(statusBean.created_at);
-        Spannable spannable = new SpannableString(Html.fromHtml(statusBean.source));
-        spannable.setSpan(new ForegroundColorSpan(0) {
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                ds.setUnderlineText(false);
-                ds.setColor(mContext.getResources().getColor(R.color.secondary_text));
-            }
-        }, 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        holder.tvSource.setText(spannable);
-        holder.tvText.setContextText(statusBean.text);
-        Picasso picasso = Picasso.with(mContext);
-        picasso.setIndicatorsEnabled(true);
-        picasso.setLoggingEnabled(true);
-        picasso.load(statusBean.user.profile_image_url)
-                .resize(avatarSize, avatarSize)
-                .centerCrop()
-                .into(holder.ivUserProfile);
+        if (getItemViewType(position) != VIEW_TYPE_LOADING) {
+            Status statusBean = mData.get(position);
+            holder.tvUserName.setText(statusBean.user.screen_name);
+            holder.tvCreatedTime.setTextByDate(statusBean.created_at);
+            Spannable spannable = new SpannableString(Html.fromHtml(statusBean.source));
+            spannable.setSpan(new ForegroundColorSpan(0) {
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    ds.setUnderlineText(false);
+                    ds.setColor(mContext.getResources().getColor(R.color.secondary_text));
+                }
+            }, 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.tvSource.setText(spannable);
+            holder.tvText.dealWithText(statusBean.text);
+            Picasso.with(mContext)
+                    .load(statusBean.user.profile_image_url)
+                    .resize(mAvatarSize, mAvatarSize)
+                    .centerCrop()
+                    .into(holder.ivUserProfile);
+        }
+
     }
 
     private void runEnterAnimation(View itemView, int position) {
@@ -110,19 +124,42 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         mLastAnimatedPosition = lastVisibleItemPosition;
     }
 
+    public void addLoading() {
+        isVisibleLoading = true;
+        notifyItemInserted(mData.size());
+    }
+
+    public void removeLoading() {
+        isVisibleLoading = false;
+        notifyItemRemoved(mData.size());
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == getItemCount() - 1 && isVisibleLoading) {
+            return VIEW_TYPE_LOADING;
+        } else {
+            return VIEW_TYPE_DEFAULT;
+        }
+    }
+
     class HomeWeiboViewHolder extends RecyclerView.ViewHolder {
 
+        @Optional
         @InjectView(R.id.ivUserProfile)
         ImageView ivUserProfile;
+        @Optional
         @InjectView(R.id.tvUserName)
         TextView tvUserName;
+        @Optional
         @InjectView(R.id.tvSource)
         TextView tvSource;
+        @Optional
         @InjectView(R.id.tvCreatedTime)
         DateTextView tvCreatedTime;
+        @Optional
         @InjectView(R.id.tvText)
         ContextTextView tvText;
-
 
         public HomeWeiboViewHolder(View itemView) {
             super(itemView);

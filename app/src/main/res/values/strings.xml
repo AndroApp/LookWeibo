@@ -6,8 +6,8 @@
 
     <string name="year">年</string>
     <string name="month">月</string>
-    <string name="day">日</string>
-    <string name="Yesterday">昨天</string>
+    <string name="unknown">未知</string>
+    <string name="yesterday">昨天</string>
     <string name="hour_ago">小时前</string>
     <string name="minutes_ago">分钟前</string>
     <string name="just">刚刚</string>

@@ -17,9 +17,7 @@ import android.text.style.UnderlineSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.utils.ExpressionMap;
@@ -36,10 +34,15 @@ import java.util.regex.Pattern;
  */
 public class ContextTextView extends TextView {
 
-    /**
-     * 加亮部分的文字
-     */
-    private int mTextColor;
+    private static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\[[\\u4E00-\\u9FA5\\w]+?\\]");
+    private static final Pattern TOPIC_URL = Pattern.compile("#[\\u4E00-\\u9FA5\\w，。、/\\\\';\\[\\]<>!~=-\\\\*’；】【]+?#");
+    private static final Pattern AT_URL = Pattern.compile("@[\\u4E00-\\u9FA5\\w-]+?(?=[:\\s$])");
+    private static final Pattern HTTP_URL = Pattern.compile("http://[a-zA-Z0-9+&@#/%?=~_\\-|!:,\\.;]*[a-zA-Z0-9+&@#/%=~_|]");
+
+    private static final String TOPIC_SCHEME = "com.shine.look.weibo.topic://";
+    private static final String AT_SCHEME = "com.shine.look.weibo.at://";
+    private static final String HTTP_SCHEME = "com.shine.look.weibo.http://";
+
     /**
      * 被按下时的背景颜色
      */
@@ -60,7 +63,6 @@ public class ContextTextView extends TextView {
      * 当前文字是否被按下
      */
     private boolean isPressed;
-    private SpannableStringBuilder mSpannable;
     private final int mImageSize = Utils.dpToPx(20);
 
     public ContextTextView(Context context) {
@@ -87,82 +89,28 @@ public class ContextTextView extends TextView {
     private void init() {
         mBackgroundColor = getResources().getColor(R.color.colorPrimaryLight);
         mTransparentColor = getResources().getColor(android.R.color.transparent);
-        mTextColor = getResources().getColor(R.color.colorAccent);
         setClickable(true);
         //给url设置点击和颜色
-        setAutoLinkMask(Linkify.WEB_URLS);
         setMovementMethod(LinkMovementMethod.getInstance());
-        setLinkTextColor(mTextColor);
         //设置点击效果颜色
+        setLinkTextColor(getResources().getColor(R.color.colorAccent));
     }
 
-    public void setContextText(String contextText) {
-        mSpannable = new SpannableStringBuilder(contextText);
-        //处理话题文字
-        setTopicText(contextText);
-        //处理@文字
-        setAtText(contextText);
-        setExpression(contextText);
-        setText(mSpannable);
+
+    public void dealWithText(CharSequence text) {
+        Spannable spannable = new SpannableStringBuilder(text);
+        //处理文字
+        Linkify.addLinks(spannable, TOPIC_URL, TOPIC_SCHEME);
+        Linkify.addLinks(spannable, AT_URL, AT_SCHEME);
+        Linkify.addLinks(spannable, HTTP_URL, HTTP_SCHEME);
+        addExpression(spannable);
         //取消下划线
-        setURLUnderLine();
+        setURLUnderLine(spannable);
+        setText(spannable);
     }
 
-    private void setTopicText(String text) {
-        int topicStart;
-        int topicEnd = 0;
-        String regex = "#[\\u4E00-\\u9FA5\\w]+?#";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
-        while (matcher.find(topicEnd)) {
-            topicStart = matcher.start();
-            topicEnd = matcher.end();
-            ClickableSpan topicTextClick = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    Toast.makeText(getContext(), "话题被点击", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    ds.setColor(mTextColor);
-                }
-
-
-            };
-            mSpannable.setSpan(topicTextClick, topicStart, topicEnd, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-    }
-
-
-    private void setAtText(String text) {
-        int replyAtStart;
-        int replyAtEnd = 0;
-        String regex = "@[\\u4E00-\\u9FA5\\w]+?[:\\s]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
-        while (matcher.find(replyAtEnd)) {
-            replyAtStart = matcher.start();
-            replyAtEnd = matcher.end() - 1;
-            ClickableSpan replyAtClick = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    Toast.makeText(getContext(), "话题被点击", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    ds.setColor(mTextColor);
-                }
-            };
-            mSpannable.setSpan(replyAtClick, replyAtStart, replyAtEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-    }
-
-    private void setExpression(String contextText) {
-        String regex = "\\[[\\u4E00-\\u9FA5\\w]+?\\]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(contextText);
+    private void addExpression(Spannable spannable) {
+        Matcher matcher = EXPRESSION_PATTERN.matcher(spannable);
         int start;
         int end = 0;
         while (matcher.find(end)) {
@@ -176,12 +124,11 @@ public class ContextTextView extends TextView {
             }
             Drawable drawable = getResources().getDrawable(resId);
             drawable.setBounds(0, 0, mImageSize, mImageSize);
-            mSpannable.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), start, end, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), start, end, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 
-    private void setURLUnderLine() {
-        Spannable spannable = (Spannable) getText();
+    private void setURLUnderLine(Spannable spannable) {
         spannable.setSpan(new UnderlineSpan() {
             @Override
             public void updateDrawState(TextPaint ds) {
@@ -189,6 +136,7 @@ public class ContextTextView extends TextView {
             }
         }, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -240,6 +188,4 @@ public class ContextTextView extends TextView {
         }
         return true;
     }
-
-
 }

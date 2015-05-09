@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
 import com.shine.look.weibo.R;
@@ -14,6 +13,7 @@ import com.shine.look.weibo.bean.HomeInfo;
 import com.shine.look.weibo.medel.BaseModel;
 import com.shine.look.weibo.medel.HomeModel;
 import com.shine.look.weibo.ui.adapter.HomeWeiboAdapter;
+import com.shine.look.weibo.ui.views.LoadMoreRecyclerView;
 
 import butterknife.InjectView;
 
@@ -22,10 +22,10 @@ import butterknife.InjectView;
  * Date:2015-05-03
  * Description:主页面
  */
-public class MainActivity extends BaseActivity implements BaseModel.OnRequestListener<HomeInfo>, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends BaseActivity implements BaseModel.OnRequestListener<HomeInfo>, SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnRefreshEndListener {
 
     @InjectView(R.id.rvHome)
-    RecyclerView rvHome;
+    LoadMoreRecyclerView rvHome;
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout swipeContainer;
 
@@ -33,9 +33,11 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
 
     protected HomeModel mModel;
 
-    private int mCurrentPage;
+    private int mCurrentPage = 1;
 
     private int mLastVisiblePosition;
+
+    private String mMaxId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
 
         rvHome.setLayoutManager(linearLayoutManager);
         rvHome.setAdapter(mAdapter);
+        rvHome.setOnRefreshEndListener(this);
 
         mModel = new HomeModel(this);
         mModel.setOnRequestListener(this);
@@ -68,15 +71,25 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                swipeContainer.setRefreshing(false);
+                closeRefresh();
                 if (info.total_number > 0 && info.statuses.size() > 0) {
                     if (mModel.getPage() == 1 && mAdapter.getItemCount() > 0) {
                         mAdapter.clear(mLastVisiblePosition);
                     }
                     mAdapter.addItems(info.statuses);
+                    mMaxId = info.max_id;
                 }
             }
         }, 500);
+    }
+
+    private void closeRefresh() {
+        if (rvHome.isLoading()) {
+            rvHome.setCloseLoading();
+        }
+        if (swipeContainer.isRefreshing()) {
+            swipeContainer.setRefreshing(false);
+        }
     }
 
     @Override
@@ -90,8 +103,18 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
             mCurrentPage = 1;
             mLastVisiblePosition = ((LinearLayoutManager) rvHome.getLayoutManager()).findLastVisibleItemPosition();
             mModel.setPage(mCurrentPage);
+            //mModel.setMaxId(null);
             mModel.request();
         }
 
+    }
+
+    @Override
+    public void onEnd() {
+        if (mModel != null) {
+            mModel.setPage(++mCurrentPage);
+            //mModel.setMaxId(mMaxId);
+            mModel.request();
+        }
     }
 }

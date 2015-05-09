@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@id/ivUserProfile"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginRight="8dp"
             tools:src="@mipmap/ic_launcher"/>
 
@@ -69,6 +69,5 @@
             tools:text="texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext"/>
 
     </RelativeLayout>
-
 
 </android.support.v7.widget.CardView>
