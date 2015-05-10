@@ -6,5 +6,8 @@ package com.shine.look.weibo.bean;
  * Description:
  */
 public class ThumbnailPic {
+    /**
+     * 缩略图片地址（小图），没有时不返回此字段
+     */
     public String thumbnail_pic;
 }

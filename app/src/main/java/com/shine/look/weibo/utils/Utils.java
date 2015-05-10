@@ -127,4 +127,5 @@ public class Utils {
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
     }
+
 }

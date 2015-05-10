@@ -6,4 +6,7 @@
     <item name="tvSource" type="id"/>
     <item name="tvText" type="id"/>
     <item name="swipe_container" type="id"/>
+    <item name="ivLargePic" type="id"/>
+    <item name="rvThumbnailPic" type="id"/>
+    <item name="ivThumbnailPic" type="id"/>
 </resources>

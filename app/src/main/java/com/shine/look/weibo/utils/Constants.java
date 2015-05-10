@@ -25,7 +25,11 @@ public class Constants {
      * 微博接口url路径
      */
     public static final String URL_HOME_PATH = "https://api.weibo.com/2/statuses/home_timeline.json?";    //首页路径
-    public static final String URL_EMOTIONS_PATH = "https://api.weibo.com/2/emotions.json?";    //首页路径
+
+    public static final String URL_THUMBNAIL_PATH = "/thumbnail/";
+    public static final String URL_BMIDDLE_PATH = "/bmiddle/";
+    public static final String URL_LARGE_PATH = "/large/";
+
 
     /*
      *接口传递参数名

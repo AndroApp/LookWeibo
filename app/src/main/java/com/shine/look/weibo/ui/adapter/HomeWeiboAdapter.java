@@ -19,6 +19,9 @@ import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.Status;
 import com.shine.look.weibo.ui.views.ContextTextView;
 import com.shine.look.weibo.ui.views.DateTextView;
+import com.shine.look.weibo.ui.views.ThumbnailPicLayoutManager;
+import com.shine.look.weibo.ui.views.ScaledTransformation;
+import com.shine.look.weibo.utils.Constants;
 import com.shine.look.weibo.utils.Utils;
 import com.squareup.picasso.Picasso;
 
@@ -38,14 +41,15 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
 
     private static final int VIEW_TYPE_DEFAULT = 1;
     private static final int VIEW_TYPE_LOADING = 2;
-
-    private List<Status> mData;
-
-    private Context mContext;
+    private static final int COLUMN_COUNT = 3;
 
     private static final int mAvatarSize = 50;
 
+    private final ScaledTransformation mTransformation;
     private final LayoutInflater mInflater;
+
+    private List<Status> mData;
+    private Context mContext;
 
     /**
      * 最后一个进行动画的item的位置
@@ -58,6 +62,7 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         this.mContext = context;
         this.mData = new ArrayList<>();
         this.mInflater = LayoutInflater.from(context);
+        this.mTransformation = new ScaledTransformation();
     }
 
     @Override
@@ -67,7 +72,9 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
             return new HomeWeiboViewHolder(loadingView);
         } else {
             View rootView = mInflater.inflate(R.layout.item_home_weibo, parent, false);
-            return new HomeWeiboViewHolder(rootView);
+            HomeWeiboViewHolder holder = new HomeWeiboViewHolder(rootView);
+            holder.rvThumbnailPic.setLayoutManager(new ThumbnailPicLayoutManager(mContext, COLUMN_COUNT));
+            return holder;
         }
     }
 
@@ -93,9 +100,27 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
                     .resize(mAvatarSize, mAvatarSize)
                     .centerCrop()
                     .into(holder.ivUserProfile);
-        }
 
+            int picSize = statusBean.pic_urls.size();
+            if (picSize == 0) {
+                holder.ivLargePic.setVisibility(View.GONE);
+                holder.rvThumbnailPic.setVisibility(View.GONE);
+            } else if (picSize == 1) {
+                holder.ivLargePic.setVisibility(View.VISIBLE);
+                holder.rvThumbnailPic.setVisibility(View.GONE);
+                String largeUrl = statusBean.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_LARGE_PATH);
+                Picasso.with(mContext)
+                        .load(largeUrl)
+                        .transform(mTransformation)
+                        .into(holder.ivLargePic);
+            } else if (picSize > 1) {
+                holder.ivLargePic.setVisibility(View.GONE);
+                holder.rvThumbnailPic.setVisibility(View.VISIBLE);
+                holder.rvThumbnailPic.setAdapter(new ThumbnailPicAdapter(mContext, statusBean.pic_urls));
+            }
+        }
     }
+
 
     private void runEnterAnimation(View itemView, int position) {
         if (position > mLastAnimatedPosition) {
@@ -143,8 +168,7 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         }
     }
 
-    class HomeWeiboViewHolder extends RecyclerView.ViewHolder {
-
+    public static class HomeWeiboViewHolder extends RecyclerView.ViewHolder {
         @Optional
         @InjectView(R.id.ivUserProfile)
         ImageView ivUserProfile;
@@ -160,6 +184,13 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         @Optional
         @InjectView(R.id.tvText)
         ContextTextView tvText;
+        @Optional
+        @InjectView(R.id.ivLargePic)
+        ImageView ivLargePic;
+        @Optional
+        @InjectView(R.id.rvThumbnailPic)
+        RecyclerView rvThumbnailPic;
+
 
         public HomeWeiboViewHolder(View itemView) {
             super(itemView);
