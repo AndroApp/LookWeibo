@@ -13,7 +13,7 @@ import com.shine.look.weibo.utils.Constants;
  */
 public class HomeModel extends BaseModel {
 
-    private String mMaxId;
+    private long mMaxId;
 
     public HomeModel(Activity activity) {
         super(activity);
@@ -21,28 +21,27 @@ public class HomeModel extends BaseModel {
 
     @Override
     public void request() {
+        if (mMaxId == 0) {
+            setCache(true);
+        }
         executeRequest(HomeInfo.class);
     }
 
     @Override
     protected String getUrl() {
-        if (mMaxId == null) {
-            mMaxId = "0";
-        }
         RequestParams params = new RequestParams();
         params.setPath(Constants.URL_HOME_PATH);
         params.put(Constants.ARG_ACCESS_TOKEN, mAccessToken.getToken());
         params.put(Constants.ARG_MAX_ID, getMaxId());
-        params.put(Constants.ARG_PAGE, getPage());
         params.put(Constants.ARG_COUNT, Constants.PAGE_COUNT);
         return params.getUrl();
     }
 
-    public String getMaxId() {
+    public long getMaxId() {
         return mMaxId;
     }
 
-    public void setMaxId(String maxId) {
+    public void setMaxId(long maxId) {
         mMaxId = maxId;
     }
 }

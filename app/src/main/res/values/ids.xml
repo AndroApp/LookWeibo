@@ -9,4 +9,9 @@
     <item name="ivLargePic" type="id"/>
     <item name="rvThumbnailPic" type="id"/>
     <item name="ivThumbnailPic" type="id"/>
+    <item name="flWeiboContent" type="id"/>
+    <item name="flRetweetedContent" type="id"/>
+    <item name="cvRetweetedContent" type="id"/>
+    <item name="toast_message" type="id"/>
+    <item name="toast_image" type="id"/>
 </resources>

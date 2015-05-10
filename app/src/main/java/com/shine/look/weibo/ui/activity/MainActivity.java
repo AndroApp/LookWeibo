@@ -14,6 +14,7 @@ import com.shine.look.weibo.medel.BaseModel;
 import com.shine.look.weibo.medel.HomeModel;
 import com.shine.look.weibo.ui.adapter.HomeWeiboAdapter;
 import com.shine.look.weibo.ui.views.LoadMoreRecyclerView;
+import com.shine.look.weibo.utils.ToastHelper;
 
 import butterknife.InjectView;
 
@@ -33,11 +34,7 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
 
     protected HomeModel mModel;
 
-    private int mCurrentPage = 1;
-
     private int mLastVisiblePosition;
-
-    private String mMaxId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +70,12 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
             public void run() {
                 closeRefresh();
                 if (info.total_number > 0 && info.statuses.size() > 0) {
-                    if (mModel.getPage() == 1 && mAdapter.getItemCount() > 0) {
+                    if (mModel.getMaxId() == 0 && mAdapter.getItemCount() > 0) {
                         mAdapter.clear(mLastVisiblePosition);
                     }
                     mAdapter.addItems(info.statuses);
-                    mMaxId = info.max_id;
+                } else if (info.total_number >= mAdapter.getItemCount()) {
+                    ToastHelper.show(getString(R.string.sina_limit_only_load), R.mipmap.d_xiaoku);
                 }
             }
         }, 500);
@@ -94,16 +92,14 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
 
     @Override
     public void onFailure(VolleyError error) {
-        swipeContainer.setRefreshing(false);
+        closeRefresh();
     }
 
     @Override
     public void onRefresh() {
         if (mModel != null) {
-            mCurrentPage = 1;
             mLastVisiblePosition = ((LinearLayoutManager) rvHome.getLayoutManager()).findLastVisibleItemPosition();
-            mModel.setPage(mCurrentPage);
-            //mModel.setMaxId(null);
+            mModel.setMaxId(0);
             mModel.request();
         }
 
@@ -112,8 +108,7 @@ public class MainActivity extends BaseActivity implements BaseModel.OnRequestLis
     @Override
     public void onEnd() {
         if (mModel != null) {
-            mModel.setPage(++mCurrentPage);
-            //mModel.setMaxId(mMaxId);
+            mModel.setMaxId(mAdapter.getMaxId() - 1);
             mModel.request();
         }
     }

@@ -6,6 +6,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
+import com.shine.look.weibo.bean.ErrorInfo;
+import com.shine.look.weibo.http.HttpError;
 import com.shine.look.weibo.http.RequestManager;
 import com.shine.look.weibo.utils.AccessTokenKeeper;
 import com.shine.look.weibo.utils.FileHelper;
@@ -30,7 +32,6 @@ public abstract class BaseModel {
 
     protected OnRequestListener onRequestListener;
 
-    private int mPage = 1;
     /**
      * 是否缓存,只进行一次数据存储
      */
@@ -48,20 +49,21 @@ public abstract class BaseModel {
     public abstract void request();
 
     public void executeRequest(final Class clazz) {
+        final String url = getUrl();
         if (isDiskCache) {
-            String jsonStr = FileHelper.loadFile(getUrl());
+            isDiskCache = false;
+            String jsonStr = FileHelper.loadFile(url);
             if (jsonStr != null && !jsonStr.equals("")) {
                 onRequestListener.onSuccess(mGson.fromJson(jsonStr, clazz));
                 return;
             }
         }
-
-        StringRequest request = new StringRequest(getUrl(), new Response.Listener<String>() {
+        StringRequest request = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String json) {
                 if (isCache) {
                     isCache = false;
-                    FileHelper.saveFile(getUrl(), json);
+                    FileHelper.saveFile(url, json);
                 }
                 if (onRequestListener != null) {
                     onRequestListener.onSuccess(mGson.fromJson(json, clazz));
@@ -70,14 +72,18 @@ public abstract class BaseModel {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                LogHelper.d(TAG, volleyError.toString());
+                try {
+                    String errorString = new String(volleyError.networkResponse.data);
+                    HttpError.showError(mGson.fromJson(errorString, ErrorInfo.class));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (onRequestListener != null) {
                     onRequestListener.onFailure(volleyError);
                 }
             }
         });
         RequestManager.addRequest(request, mActivity);
-
     }
 
 
@@ -112,15 +118,4 @@ public abstract class BaseModel {
         this.isDiskCache = isDiskCache;
     }
 
-    public void setPage(int page) {
-        setDiskCache(false);
-        if (page == 1) {
-            setCache(true);
-        }
-        mPage = page;
-    }
-
-    public int getPage() {
-        return mPage;
-    }
 }

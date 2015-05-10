@@ -46,7 +46,7 @@ public class LoadMoreRecyclerView extends RecyclerView {
             if (layoutManager != null && layoutManager != null) {
                 int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
                 int totalItemCount = layoutManager.getItemCount();
-                if (lastVisibleItem >= totalItemCount - 1 && dy > 0) {
+                if (lastVisibleItem + 1 >= totalItemCount && dy > 0) {
                     isLoading = true;
                     ((HomeWeiboAdapter) getAdapter()).addLoading();
                     if (mEndListener != null) {

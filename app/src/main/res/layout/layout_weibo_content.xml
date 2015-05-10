@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@id/ivUserProfile"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="8dp"
+        tools:src="@mipmap/ic_launcher"/>
+
+
+    <TextView
+        android:id="@id/tvUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ivUserProfile"
+        android:singleLine="true"
+        android:textColor="@color/primary_text"
+        android:textStyle="bold"
+        tools:text="name"/>
+
+    <com.shine.look.weibo.ui.views.DateTextView
+        android:id="@id/tvCreatedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvUserName"
+        android:layout_toRightOf="@id/ivUserProfile"
+        android:singleLine="true"
+        android:textColor="@color/secondary_text"
+        android:textSize="12sp"
+        tools:text="createTime"/>
+
+
+    <TextView
+        android:id="@id/tvSource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvUserName"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@id/tvCreatedTime"
+        android:singleLine="true"
+        android:textColor="@color/secondary_text"
+        android:textSize="12sp"
+        tools:text="source"/>
+
+    <com.shine.look.weibo.ui.views.ContextTextView
+        android:id="@id/tvText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ivUserProfile"
+        android:layout_marginTop="4dp"
+        android:lineSpacingMultiplier="1.2"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        tools:text="texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@id/rvThumbnailPic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvText"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@id/ivLargePic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvText"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
+
+</RelativeLayout>

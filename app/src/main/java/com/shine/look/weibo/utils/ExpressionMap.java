@@ -1,6 +1,15 @@
 package com.shine.look.weibo.utils;
 
+import android.graphics.drawable.Drawable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
+
+import com.shine.look.weibo.WeiboApplication;
+
 import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * User:Shine
@@ -9,13 +18,17 @@ import java.util.LinkedHashMap;
  */
 public class ExpressionMap {
 
-    private LinkedHashMap map;
+    public static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\[[\\u4E00-\\u9FA5\\w]+?\\]");
 
     private static ExpressionMap mInstance = new ExpressionMap();
 
     public static ExpressionMap getInstance() {
         return mInstance;
     }
+
+    private static final int mImageSize = Utils.dpToPx(20);
+
+    private LinkedHashMap map;
 
     public LinkedHashMap getMap() {
         return map;
@@ -124,5 +137,24 @@ public class ExpressionMap {
         map.put("[干杯]", "o_ganbei");
         map.put("[照相机]", "o_zhaoxiangji");
         map.put("[沙尘暴]", "w_shachenbao");
+    }
+
+    public static void addExpression(Spannable spannable) {
+        Matcher matcher = EXPRESSION_PATTERN.matcher(spannable);
+        int start;
+        int end = 0;
+        while (matcher.find(end)) {
+            start = matcher.start();
+            end = matcher.end();
+            String group = matcher.group();
+            String imageName = (String) ExpressionMap.getInstance().getMap().get(group);
+            int resId = Utils.getResourceByImageName(imageName);
+            if (resId == 0) {
+                continue;
+            }
+            Drawable drawable = WeiboApplication.getContext().getResources().getDrawable(resId);
+            drawable.setBounds(0, 0, mImageSize, mImageSize);
+            spannable.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), start, end, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
     }
 }

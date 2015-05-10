@@ -10,5 +10,5 @@ import java.util.List;
 public class HomeInfo {
     public List<Status> statuses;
     public int total_number;
-    public String max_id;
+    public long max_id;
 }

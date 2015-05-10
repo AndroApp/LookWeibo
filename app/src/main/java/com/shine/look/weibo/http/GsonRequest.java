@@ -22,8 +22,8 @@ public class GsonRequest<T> extends Request<T> {
     private final Gson mGson = new Gson();
     private final Class<T> mClazz;
     private final Listener<T> mListener;
-    private final Map<String, String> mHeaders;
-    private final Map<String, String> mParams;
+    private Map<String, String> mHeaders;
+    private Map<String, String> mParams;
     private final boolean mIsCache;
 
     /**
@@ -89,14 +89,28 @@ public class GsonRequest<T> extends Request<T> {
     }
 
     @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        return mHeaders != null ? mHeaders : super.getHeaders();
+    public Map<String, String> getHeaders() {
+        if (mHeaders == null) {
+            try {
+                mHeaders = super.getHeaders();
+            } catch (AuthFailureError authFailureError) {
+                authFailureError.printStackTrace();
+            }
+        }
+        return mHeaders;
     }
 
 
     @Override
-    protected Map<String, String> getParams() throws AuthFailureError {
-        return mParams != null ? mParams : super.getParams();
+    protected Map<String, String> getParams() {
+        if (mParams == null) {
+            try {
+                mParams = super.getHeaders();
+            } catch (AuthFailureError authFailureError) {
+                authFailureError.printStackTrace();
+            }
+        }
+        return mParams;
     }
 
     @Override

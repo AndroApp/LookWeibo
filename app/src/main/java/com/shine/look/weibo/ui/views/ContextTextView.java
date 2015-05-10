@@ -2,17 +2,14 @@ package com.shine.look.weibo.ui.views;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
-import android.text.style.ImageSpan;
 import android.text.style.UnderlineSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
@@ -21,9 +18,7 @@ import android.widget.TextView;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.utils.ExpressionMap;
-import com.shine.look.weibo.utils.Utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -34,7 +29,6 @@ import java.util.regex.Pattern;
  */
 public class ContextTextView extends TextView {
 
-    private static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\[[\\u4E00-\\u9FA5\\w]+?\\]");
     private static final Pattern TOPIC_URL = Pattern.compile("#[\\u4E00-\\u9FA5\\w，。、/\\\\';\\[\\]<>!~=-\\\\*’；】【]+?#");
     private static final Pattern AT_URL = Pattern.compile("@[\\u4E00-\\u9FA5\\w-]+?(?=[:\\s$])");
     private static final Pattern HTTP_URL = Pattern.compile("http://[a-zA-Z0-9+&@#/%?=~_\\-|!:,\\.;]*[a-zA-Z0-9+&@#/%=~_|]");
@@ -63,7 +57,6 @@ public class ContextTextView extends TextView {
      * 当前文字是否被按下
      */
     private boolean isPressed;
-    private final int mImageSize = Utils.dpToPx(20);
 
     public ContextTextView(Context context) {
         super(context);
@@ -103,30 +96,12 @@ public class ContextTextView extends TextView {
         Linkify.addLinks(spannable, TOPIC_URL, TOPIC_SCHEME);
         Linkify.addLinks(spannable, AT_URL, AT_SCHEME);
         Linkify.addLinks(spannable, HTTP_URL, HTTP_SCHEME);
-        addExpression(spannable);
+        ExpressionMap.addExpression(spannable);
         //取消下划线
         setURLUnderLine(spannable);
         setText(spannable);
     }
 
-    private void addExpression(Spannable spannable) {
-        Matcher matcher = EXPRESSION_PATTERN.matcher(spannable);
-        int start;
-        int end = 0;
-        while (matcher.find(end)) {
-            start = matcher.start();
-            end = matcher.end();
-            String group = matcher.group();
-            String imageName = (String) ExpressionMap.getInstance().getMap().get(group);
-            int resId = Utils.getResourceByImageName(imageName);
-            if (resId == 0) {
-                continue;
-            }
-            Drawable drawable = getResources().getDrawable(resId);
-            drawable.setBounds(0, 0, mImageSize, mImageSize);
-            spannable.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), start, end, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-    }
 
     private void setURLUnderLine(Spannable spannable) {
         spannable.setSpan(new UnderlineSpan() {

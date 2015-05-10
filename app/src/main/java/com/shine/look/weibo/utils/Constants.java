@@ -17,14 +17,11 @@ public class Constants {
                     + "friendships_groups_read,friendships_groups_write,statuses_to_me_read,"
                     + "follow_app_official_microblog," + "invitation_write";
 
-    public static final long MINUTES_IN_MILLIS = 1000 * 60;//一分钟的毫秒数
-    public static final long HOUR_IN_MILLIS = MINUTES_IN_MILLIS * 60;//一小时的毫秒数
-    public static final long DAY_IN_MILLIS = HOUR_IN_MILLIS * 24;//一天的毫秒数
-
     /**
      * 微博接口url路径
      */
-    public static final String URL_HOME_PATH = "https://api.weibo.com/2/statuses/home_timeline.json?";    //首页路径
+    public static final String URL_SINAL_SHORT = "http://t.cn/";    //新浪短域名
+    public static final String URL_HOME_PATH = "https://api.weibo.com/2/statuses/friends_timeline.json?";    //首页路径
 
     public static final String URL_THUMBNAIL_PATH = "/thumbnail/";
     public static final String URL_BMIDDLE_PATH = "/bmiddle/";
@@ -36,7 +33,6 @@ public class Constants {
      */
     public static final String ARG_ACCESS_TOKEN = "access_token";    //账号token
     public static final String ARG_COUNT = "count";                 //页记录条数
-    public static final String ARG_PAGE = "page";                   //页码
     public static final String ARG_MAX_ID = "max_id";              //指定获取的微博范围
 
     /*
