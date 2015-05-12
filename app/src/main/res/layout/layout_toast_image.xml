@@ -21,7 +21,6 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginRight="16dp"
-        android:scaleType="centerInside"
-        android:src="@mipmap/d_xiaoku"/>
+        android:scaleType="centerInside"/>
 
 </LinearLayout>

@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
  */
 public class ContextTextView extends TextView {
 
-    private static final Pattern TOPIC_URL = Pattern.compile("#[\\u4E00-\\u9FA5\\w，。、/\\\\';\\[\\]<>!~=-\\\\*’；】【]+?#");
-    private static final Pattern AT_URL = Pattern.compile("@[\\u4E00-\\u9FA5\\w-]+?(?=[:\\s$])");
+    private static final Pattern TOPIC_URL = Pattern.compile("#[\\p{InCJK_UNIFIED_IDEOGRAPHS}\\w\\p{Print}&&[^#]]+#");
+    private static final Pattern AT_URL = Pattern.compile("@[\\p{InCJK_UNIFIED_IDEOGRAPHS}\\w-]+?(?=[:\\s])");
     private static final Pattern HTTP_URL = Pattern.compile("http://[a-zA-Z0-9+&@#/%?=~_\\-|!:,\\.;]*[a-zA-Z0-9+&@#/%=~_|]");
 
     private static final String TOPIC_SCHEME = "com.shine.look.weibo.topic://";
@@ -57,6 +57,14 @@ public class ContextTextView extends TextView {
      * 当前文字是否被按下
      */
     private boolean isPressed;
+
+
+    private final UnderlineSpan mUnderlineSpan = new UnderlineSpan() {
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            ds.setUnderlineText(false);
+        }
+    };
 
     public ContextTextView(Context context) {
         super(context);
@@ -98,18 +106,8 @@ public class ContextTextView extends TextView {
         Linkify.addLinks(spannable, HTTP_URL, HTTP_SCHEME);
         ExpressionMap.addExpression(spannable);
         //取消下划线
-        setURLUnderLine(spannable);
+        spannable.setSpan(mUnderlineSpan, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setText(spannable);
-    }
-
-
-    private void setURLUnderLine(Spannable spannable) {
-        spannable.setSpan(new UnderlineSpan() {
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                ds.setUnderlineText(false);
-            }
-        }, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
 

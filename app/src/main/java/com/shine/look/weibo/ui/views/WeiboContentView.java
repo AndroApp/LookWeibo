@@ -12,6 +12,7 @@ import android.text.TextPaint;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.Status;
 import com.shine.look.weibo.ui.adapter.ThumbnailPicAdapter;
+import com.shine.look.weibo.ui.utils.ScaledTransformation;
 import com.shine.look.weibo.utils.Constants;
 import com.shine.look.weibo.utils.Utils;
 import com.squareup.picasso.Picasso;
@@ -82,13 +84,16 @@ public class WeiboContentView extends RelativeLayout {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_weibo_content, this);
         ButterKnife.inject(this, view);
         mRvThumbnailPic.setLayoutManager(new ThumbnailPicLayoutManager(getContext(), COLUMN_COUNT));
-        this.mTransformation = new ScaledTransformation();
+        mRvThumbnailPic.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        mTransformation = new ScaledTransformation();
     }
 
     public void setWeiboContent(Status status, boolean isRetweeted) {
-        if (status == null) {
-            return;
-        }
         try {
             if (status.user == null) {
                 mTvText.dealWithText(status.text);
@@ -113,25 +118,20 @@ public class WeiboContentView extends RelativeLayout {
             //用户头像
             Picasso.with(getContext())
                     .load(status.user.profile_image_url)
-                    .resize(mAvatarSize, mAvatarSize)
-                    .centerCrop()
                     .into(mIvUserProfile);
             //微博文字内容
-            mTvText.dealWithText(status.text);
+            mTvText.dealWithText(status.text + " ");
             //微博图片
             int picSize = status.pic_urls.size();
             if (picSize == 0) {
                 mIvLargePic.setVisibility(View.GONE);
                 mRvThumbnailPic.setVisibility(View.GONE);
             } else if (picSize == 1) {
-                if (isRetweeted) {
-                    mTransformation.setBitmapWidth(RETWEETED_PIC_WIDTH);
-                } else {
-                    mTransformation.setBitmapWidth(ROOT_PIC_WIDTH);
-                }
                 mIvLargePic.setVisibility(View.VISIBLE);
                 mRvThumbnailPic.setVisibility(View.GONE);
                 String largeUrl = status.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_LARGE_PATH);
+                mTransformation.setBitmapWidth(isRetweeted ? RETWEETED_PIC_WIDTH : ROOT_PIC_WIDTH);
+                mTransformation.setGifLabel(largeUrl.indexOf(".gif") != -1);
                 Picasso.with(getContext())
                         .load(largeUrl)
                         .transform(mTransformation)

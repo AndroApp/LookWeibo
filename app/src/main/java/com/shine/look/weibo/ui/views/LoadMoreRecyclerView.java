@@ -46,18 +46,18 @@ public class LoadMoreRecyclerView extends RecyclerView {
             if (layoutManager != null && layoutManager != null) {
                 int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
                 int totalItemCount = layoutManager.getItemCount();
+                if (getAdapter() instanceof HomeWeiboAdapter) {
+                    ((HomeWeiboAdapter) getAdapter()).closeAnimateItems();
+                }
                 if (lastVisibleItem + 1 >= totalItemCount && dy > 0) {
                     isLoading = true;
                     ((HomeWeiboAdapter) getAdapter()).addLoading();
                     if (mEndListener != null) {
                         mEndListener.onEnd();
                     }
-
                 }
             }
         }
-
-        super.onScrolled(dx, dy);
     }
 
     public boolean isLoading() {

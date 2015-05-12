@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 public class ExpressionMap {
 
-    public static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\[[\\u4E00-\\u9FA5\\w]+?\\]");
+    public static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\[(\\S+?)\\]");
 
     private static ExpressionMap mInstance = new ExpressionMap();
 
@@ -156,5 +156,6 @@ public class ExpressionMap {
             drawable.setBounds(0, 0, mImageSize, mImageSize);
             spannable.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), start, end, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+
     }
 }

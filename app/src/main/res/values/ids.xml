@@ -6,6 +6,8 @@
     <item name="tvSource" type="id"/>
     <item name="tvText" type="id"/>
     <item name="swipe_container" type="id"/>
+    <item name="drawerLayout" type="id"/>
+    <item name="rvHome" type="id"/>
     <item name="ivLargePic" type="id"/>
     <item name="rvThumbnailPic" type="id"/>
     <item name="ivThumbnailPic" type="id"/>
@@ -14,4 +16,14 @@
     <item name="cvRetweetedContent" type="id"/>
     <item name="toast_message" type="id"/>
     <item name="toast_image" type="id"/>
+    <item name="btnReposts" type="id"/>
+    <item name="btnComments" type="id"/>
+    <item name="tvRepostsCount" type="id"/>
+    <item name="tvCommentsCount" type="id"/>
+    <item name="tvAttitudesCount" type="id"/>
+    <item name="leftDrawer" type="id"/>
+    <item name="contentFrame" type="id"/>
+    <item name="ivIcon" type="id"/>
+    <item name="tvLabel" type="id"/>
+    <item name="ivUserProfilePhoto" type="id"/>
 </resources>

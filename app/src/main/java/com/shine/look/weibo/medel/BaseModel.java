@@ -26,7 +26,7 @@ public abstract class BaseModel {
     /**
      * 微博账号Token
      */
-    protected final Oauth2AccessToken mAccessToken = AccessTokenKeeper.readAccessToken();
+    protected final Oauth2AccessToken mAccessToken;
 
     private final Gson mGson = new Gson();
 
@@ -44,16 +44,17 @@ public abstract class BaseModel {
     public BaseModel(Activity activity) {
         this.mActivity = activity;
         this.isDiskCache = true;
+        this.mAccessToken = AccessTokenKeeper.readAccessToken();
     }
 
     public abstract void request();
 
-    public void executeRequest(final Class clazz) {
+    protected void executeRequest(final Class clazz) {
         final String url = getUrl();
         if (isDiskCache) {
             isDiskCache = false;
-            String jsonStr = FileHelper.loadFile(url);
-            if (jsonStr != null && !jsonStr.equals("")) {
+            String jsonStr = FileHelper.loadFile(url, mAccessToken.getUid());
+            if (jsonStr != null && !jsonStr.equals("") && onRequestListener != null) {
                 onRequestListener.onSuccess(mGson.fromJson(jsonStr, clazz));
                 return;
             }
@@ -63,7 +64,7 @@ public abstract class BaseModel {
             public void onResponse(String json) {
                 if (isCache) {
                     isCache = false;
-                    FileHelper.saveFile(url, json);
+                    FileHelper.saveFile(url, mAccessToken.getUid(), json);
                 }
                 if (onRequestListener != null) {
                     onRequestListener.onSuccess(mGson.fromJson(json, clazz));

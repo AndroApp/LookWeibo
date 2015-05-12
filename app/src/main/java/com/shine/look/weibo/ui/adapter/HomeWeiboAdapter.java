@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.Status;
@@ -34,8 +35,10 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     private static final int VIEW_TYPE_LOADING = 2;
 
     private final LayoutInflater mInflater;
+    private final Context mContext;
 
     private List<Status> mData;
+    private boolean mAnimateItems = true;
 
     /**
      * 最后一个进行动画的item的位置
@@ -47,6 +50,7 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     public HomeWeiboAdapter(Context context) {
         this.mData = new ArrayList<>();
         this.mInflater = LayoutInflater.from(context);
+        this.mContext = context;
     }
 
     @Override
@@ -77,12 +81,32 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
                 holder.cvRetweetedContent.setVisibility(View.GONE);
             }
 
+            //转发数，评论数，赞数
+            if (status.reposts_count > 0) {
+                holder.tvRepostsCount.setText("" + status.reposts_count);
+                holder.tvRepostsCount.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvRepostsCount.setVisibility(View.GONE);
+            }
+            if (status.comments_count > 0) {
+                holder.tvCommentsCount.setText("" + status.comments_count);
+                holder.tvCommentsCount.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvCommentsCount.setVisibility(View.GONE);
+            }
+            if (status.attitudes_count > 0) {
+                holder.tvAttitudesCount.setText("" + status.attitudes_count);
+                holder.tvAttitudesCount.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvAttitudesCount.setVisibility(View.GONE);
+            }
+
         }
     }
 
 
     private void runEnterAnimation(View itemView, int position) {
-        if (position > mLastAnimatedPosition) {
+        if (mAnimateItems && position > mLastAnimatedPosition) {
             mLastAnimatedPosition = position;
             itemView.setTranslationY(Utils.getScreenHeight());
             itemView.animate().translationY(0)
@@ -127,6 +151,12 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         }
     }
 
+    public void closeAnimateItems() {
+        if (this.mAnimateItems) {
+            this.mAnimateItems = false;
+        }
+    }
+
     public long getMaxId() {
         return Long.parseLong(mData.get(mData.size() - 1).id);
     }
@@ -142,6 +172,15 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         @Optional
         @InjectView(R.id.flRetweetedContent)
         WeiboContentView flRetweetedContent;
+        @Optional
+        @InjectView(R.id.tvAttitudesCount)
+        TextView tvAttitudesCount;
+        @Optional
+        @InjectView(R.id.tvRepostsCount)
+        TextView tvRepostsCount;
+        @Optional
+        @InjectView(R.id.tvCommentsCount)
+        TextView tvCommentsCount;
 
         public HomeWeiboViewHolder(View itemView) {
             super(itemView);

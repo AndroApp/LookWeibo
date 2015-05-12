@@ -95,7 +95,7 @@ public class Utils {
             return 0;
         }
         Context ctx = WeiboApplication.getContext();
-        int resId = ctx.getResources().getIdentifier(imageName, "mipmap", ctx.getPackageName());
+        int resId = ctx.getResources().getIdentifier(imageName, "drawable", ctx.getPackageName());
         return resId;
     }
 

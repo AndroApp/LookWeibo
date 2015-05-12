@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.shine.look.weibo.R;
 import com.shine.look.weibo.utils.AccessTokenKeeper;
 import com.shine.look.weibo.utils.Constants;
 import com.sina.weibo.sdk.auth.AuthInfo;
@@ -14,8 +13,6 @@ import com.sina.weibo.sdk.auth.WeiboAuthListener;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
 
-import butterknife.OnClick;
-
 /**
  * User:Shine
  * Date:2015-05-03
@@ -23,31 +20,24 @@ import butterknife.OnClick;
  */
 public class WBAuthActivity extends BaseActivity {
 
-
-    private AuthInfo mAuthInfo;
-    private Oauth2AccessToken mAccessToken;
     private SsoHandler mSsoHandler;
-
-    @OnClick(R.id.login)
-    public void onLoginClick() {
-        mSsoHandler.authorize(new AuthListener());
-    }
-
-    @OnClick(R.id.mian)
-    public void onMainClick() {
-        MainActivity.start(this);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wbauth);
         init();
     }
 
     private void init() {
-        mAuthInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
-        mSsoHandler = new SsoHandler(this, mAuthInfo);
+        Oauth2AccessToken accessToken = AccessTokenKeeper.readAccessToken();
+        if (!accessToken.getToken().equals("")) {
+            MainActivity.start(this);
+            finish();
+        } else {
+            AuthInfo mAuthInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
+            mSsoHandler = new SsoHandler(this, mAuthInfo);
+            mSsoHandler.authorize(new AuthListener());
+        }
     }
 
     @Override
@@ -62,11 +52,12 @@ public class WBAuthActivity extends BaseActivity {
 
         @Override
         public void onComplete(Bundle bundle) {
-            mAccessToken = Oauth2AccessToken.parseAccessToken(bundle);
-            if (mAccessToken.isSessionValid()) {
+            Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(bundle);
+            if (accessToken.isSessionValid()) {
                 // 保存 Token 到 SharedPreferences
-                AccessTokenKeeper.writeAccessToken(mAccessToken);
-                Toast.makeText(WBAuthActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
+                AccessTokenKeeper.writeAccessToken(accessToken);
+                MainActivity.start(WBAuthActivity.this);
+                finish();
             } else {
                 // 以下几种情况，您会收到 Code：
                 // 1. 当您未在平台上注册的应用程序的包名与签名时；
@@ -83,12 +74,18 @@ public class WBAuthActivity extends BaseActivity {
 
         @Override
         public void onWeiboException(WeiboException e) {
-
+            finish();
         }
 
         @Override
         public void onCancel() {
-
+            finish();
         }
+
+    }
+
+    @Override
+    protected boolean shouldInstallDrawer() {
+        return false;
     }
 }

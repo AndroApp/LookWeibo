@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.ThumbnailPic;
-import com.shine.look.weibo.ui.views.LabelTransform;
+import com.shine.look.weibo.ui.utils.LabelTransform;
 import com.shine.look.weibo.utils.Constants;
 import com.shine.look.weibo.utils.Utils;
 import com.squareup.picasso.Picasso;

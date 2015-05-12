@@ -20,12 +20,12 @@ import java.io.OutputStreamWriter;
  */
 public class FileHelper {
 
-    public static void saveFile(String fileName, String text) {
+    public static void saveFile(String fileName, String uId, String text) {
         Context context = WeiboApplication.getContext();
         FileOutputStream out;
         BufferedWriter writer = null;
         try {
-            fileName = getFileNameByUrl(fileName);
+            fileName = getFileNameByUrl(fileName, uId);
             out = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.write(text);
@@ -44,13 +44,13 @@ public class FileHelper {
         }
     }
 
-    public static String loadFile(String fileName) {
+    public static String loadFile(String fileName, String uId) {
         Context context = WeiboApplication.getContext();
         FileInputStream in;
         BufferedReader reader = null;
         StringBuilder content = new StringBuilder();
         try {
-            fileName = getFileNameByUrl(fileName);
+            fileName = getFileNameByUrl(fileName, uId);
             in = context.openFileInput(fileName);
             reader = new BufferedReader(new InputStreamReader(in));
             String line = "";
@@ -62,7 +62,7 @@ public class FileHelper {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (reader != null){
+            if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
@@ -73,8 +73,8 @@ public class FileHelper {
         return content.toString();
     }
 
-    private final static String getFileNameByUrl(String url) {
-        return Utils.getMD5(url.substring(0, url.indexOf('?')));
+    private final static String getFileNameByUrl(String fileName, String uId) {
+        return Utils.getMD5(fileName.substring(0, fileName.indexOf('?')) + uId);
     }
 
 }

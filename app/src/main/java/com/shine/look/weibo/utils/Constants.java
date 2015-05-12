@@ -22,6 +22,7 @@ public class Constants {
      */
     public static final String URL_SINAL_SHORT = "http://t.cn/";    //新浪短域名
     public static final String URL_HOME_PATH = "https://api.weibo.com/2/statuses/friends_timeline.json?";    //首页路径
+    public static final String URL_USER_PATH = "https://api.weibo.com/2/users/show.json?";    //查询用户信息路径
 
     public static final String URL_THUMBNAIL_PATH = "/thumbnail/";
     public static final String URL_BMIDDLE_PATH = "/bmiddle/";
@@ -34,11 +35,12 @@ public class Constants {
     public static final String ARG_ACCESS_TOKEN = "access_token";    //账号token
     public static final String ARG_COUNT = "count";                 //页记录条数
     public static final String ARG_MAX_ID = "max_id";              //指定获取的微博范围
+    public static final String ARG_USER_ID = "uid";              //用户id
 
     /*
      *接口传递的参数
      */
-    public static final int PAGE_COUNT = 40;
+    public static final int PAGE_COUNT = 20;
 
 }
 

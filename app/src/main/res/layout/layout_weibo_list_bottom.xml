@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/main_list_bottom_height"
+    android:layout_gravity="bottom"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
+
+    <ImageButton
+        android:id="@id/btnReposts"
+        android:layout_width="@dimen/small_icon_size"
+        android:layout_height="@dimen/small_icon_size"
+        android:background="@drawable/btn_main_action"
+        android:src="@drawable/ic_action_launch"/>
+
+    <ImageButton
+        android:id="@id/btnComments"
+        android:layout_width="@dimen/small_icon_size"
+        android:layout_height="@dimen/small_icon_size"
+        android:background="@drawable/btn_main_action"
+        android:src="@drawable/ic_action_mode_comment"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|right">
+
+        <TextView
+            android:id="@id/tvRepostsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:drawableLeft="@drawable/ic_action_reply"
+            android:drawablePadding="2dp"
+            android:textColor="@color/secondary_text"
+            tools:text="15"/>
+
+        <TextView
+            android:id="@id/tvCommentsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:drawableLeft="@drawable/ic_action_mode_comment_grey"
+            android:drawablePadding="2dp"
+            android:textColor="@color/secondary_text"
+            tools:text="11"/>
+
+        <TextView
+            android:id="@id/tvAttitudesCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_action_favorite"
+            android:drawablePadding="2dp"
+            android:textColor="@color/secondary_text"
+            tools:text="85"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

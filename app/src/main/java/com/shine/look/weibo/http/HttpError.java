@@ -2,7 +2,6 @@ package com.shine.look.weibo.http;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.ErrorInfo;
-import com.shine.look.weibo.utils.ToastHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,21 +65,21 @@ public class HttpError {
         sErrStrMap.put(USER_REQUEST_OUT_LIMIT, "请求次数超过新浪限制啦");
         sErrStrMap.put(USER_REQUEST_RATE_OUT_LIMIT, "请求次数超过新浪限制啦");
 
-        sErrImgMap.put(USER_REQUEST_RATE_OUT_LIMIT, R.mipmap.d_dalian);
-        sErrImgMap.put(USER_REQUEST_OUT_LIMIT, R.mipmap.d_dalian);
-        sErrImgMap.put(IP_REQUEST_OUT_LIMIT, R.mipmap.d_dalian);
-        sErrImgMap.put(SYSTEM_EROR, R.mipmap.d_bishi);
-        sErrImgMap.put(SYSTEM_UNAVAILBALE, R.mipmap.d_bishi);
-        sErrImgMap.put(IP_LIMIT, R.mipmap.d_shiwang);
-        sErrImgMap.put(SYSTEM_IS_BUSY, R.mipmap.d_aoteman);
-        sErrImgMap.put(JOB_EXPIRED, R.mipmap.d_aoteman);
-        sErrImgMap.put(ILLEGAL_REQUEST, R.mipmap.d_bizui);
-        sErrImgMap.put(INVALID_WEIBO_USER, R.mipmap.d_baibai);
+        sErrImgMap.put(USER_REQUEST_RATE_OUT_LIMIT, R.drawable.d_dalian);
+        sErrImgMap.put(USER_REQUEST_OUT_LIMIT, R.drawable.d_dalian);
+        sErrImgMap.put(IP_REQUEST_OUT_LIMIT, R.drawable.d_dalian);
+        sErrImgMap.put(SYSTEM_EROR, R.drawable.d_bishi);
+        sErrImgMap.put(SYSTEM_UNAVAILBALE, R.drawable.d_bishi);
+        sErrImgMap.put(IP_LIMIT, R.drawable.d_shiwang);
+        sErrImgMap.put(SYSTEM_IS_BUSY, R.drawable.d_aoteman);
+        sErrImgMap.put(JOB_EXPIRED, R.drawable.d_aoteman);
+        sErrImgMap.put(ILLEGAL_REQUEST, R.drawable.d_bizui);
+        sErrImgMap.put(INVALID_WEIBO_USER, R.drawable.d_baibai);
     }
 
 
     public static void showError(ErrorInfo errorInfo) {
-        ToastHelper.show(sErrStrMap.get(errorInfo.error_code), sErrImgMap.get(errorInfo.error_code));
+        //ToastHelper.show(sErrStrMap.get(errorInfo.error_code), sErrImgMap.get(errorInfo.error_code));
     }
 
 }
