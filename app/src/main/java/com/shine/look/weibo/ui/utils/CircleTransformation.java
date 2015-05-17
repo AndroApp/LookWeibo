@@ -1,31 +1,37 @@
 package com.shine.look.weibo.ui.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.squareup.picasso.Transformation;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
 
-public class CircleTransformation implements Transformation {
+public class CircleTransformation extends BitmapTransformation {
 
     private static final int STROKE_WIDTH = 6;
 
+    public CircleTransformation(Context context) {
+        super(context);
+    }
+
     @Override
-    public Bitmap transform(Bitmap source) {
-        int size = Math.min(source.getWidth(), source.getHeight());
+    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+        int size = Math.min(toTransform.getWidth(), toTransform.getHeight());
 
-        int x = (source.getWidth() - size) / 2;
-        int y = (source.getHeight() - size) / 2;
+        int x = (toTransform.getWidth() - size) / 2;
+        int y = (toTransform.getHeight() - size) / 2;
 
-        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-        if (squaredBitmap != source) {
-            source.recycle();
+        Bitmap squaredBitmap = Bitmap.createBitmap(toTransform, x, y, size, size);
+        if (squaredBitmap != toTransform) {
+            toTransform.recycle();
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+        Bitmap bitmap = Bitmap.createBitmap(size, size, toTransform.getConfig());
 
         Canvas canvas = new Canvas(bitmap);
 
@@ -48,7 +54,7 @@ public class CircleTransformation implements Transformation {
     }
 
     @Override
-    public String key() {
+    public String getId() {
         return "circleTransformation()";
     }
 }

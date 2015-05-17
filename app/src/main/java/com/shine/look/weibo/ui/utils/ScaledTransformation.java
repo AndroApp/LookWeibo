@@ -7,17 +7,17 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.shine.look.weibo.R;
-import com.shine.look.weibo.WeiboApplication;
 import com.shine.look.weibo.utils.Utils;
-import com.squareup.picasso.Transformation;
 
 /**
  * User:Shine
  * Date:2015-05-09
  * Description:
  */
-public class ScaledTransformation implements Transformation {
+public class ScaledTransformation extends BitmapTransformation {
 
     private static final int MAX_HEIGHT = Utils.getScreenHeight();
     private final Paint mBgPaint;
@@ -29,8 +29,8 @@ public class ScaledTransformation implements Transformation {
     private boolean isGif;
     private int mBitmapWidth;
 
-    public ScaledTransformation() {
-        Context context = WeiboApplication.getContext();
+    public ScaledTransformation(Context context) {
+        super(context);
         mBgPaint = new Paint();
         mBgPaint.setColor(context.getResources().getColor(R.color.colorAccent));
         mBgPaint.setAntiAlias(true);
@@ -45,8 +45,7 @@ public class ScaledTransformation implements Transformation {
     }
 
     @Override
-    public Bitmap transform(Bitmap source) {
-
+    protected Bitmap transform(BitmapPool pool, Bitmap source, int outWidth, int outHeight) {
         float scaledSize = (float) mBitmapWidth / source.getWidth();//得到需要放大的比例
         int scaledMaxHeight = (int) (MAX_HEIGHT / scaledSize);//原图的最大高度
         int sourceHeight = source.getHeight();//原图高度
@@ -80,17 +79,16 @@ public class ScaledTransformation implements Transformation {
         }
     }
 
+    public void setGifLabel(boolean label) {
+        this.isGif = label;
+    }
 
     public void setBitmapWidth(int bitmapWidth) {
         this.mBitmapWidth = bitmapWidth;
     }
 
-    public void setGifLabel(boolean label) {
-        this.isGif = label;
-    }
-
     @Override
-    public String key() {
-        return "scaled_transformation";
+    public String getId() {
+        return "com.shine.look.weibo.scaled_transformation";
     }
 }

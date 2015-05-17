@@ -1,44 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/btn_context_menu"
     android:clickable="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@id/ivUserProfilePhoto"
+        android:layout_width="@dimen/navigation_menu_avatar_size"
+        android:layout_height="@dimen/navigation_menu_avatar_size"
+        android:layout_margin="12dp"/>
 
-        <ImageView
-            android:id="@id/ivUserProfilePhoto"
-            android:layout_width="@dimen/navigation_menu_avatar_size"
-            android:layout_height="@dimen/navigation_menu_avatar_size"
-            android:layout_margin="12dp"/>
+    <TextView
+        android:id="@id/tvUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/btnSearch"
+        android:layout_toRightOf="@id/ivUserProfilePhoto"
+        android:layout_weight="1"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="froger_mcs"/>
 
-        <TextView
-            android:id="@id/tvUserName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_action_search"/>
-
-    </LinearLayout>
+    <ImageButton
+        android:id="@id/btnSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_search"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:background="#dddddd"/>
-</FrameLayout>
+
+</RelativeLayout>
+

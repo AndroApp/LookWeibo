@@ -1,6 +1,7 @@
 package com.shine.look.weibo.ui.fragment;
 
-import android.app.Fragment;
+
+import android.support.v4.app.Fragment;
 
 import com.shine.look.weibo.WeiboApplication;
 import com.squareup.leakcanary.RefWatcher;

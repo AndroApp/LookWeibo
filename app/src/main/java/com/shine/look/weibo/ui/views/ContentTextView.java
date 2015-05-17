@@ -6,19 +6,22 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.UnderlineSpan;
-import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.shine.look.weibo.R;
+import com.shine.look.weibo.ui.utils.WeiboTextUrlSpan;
 import com.shine.look.weibo.utils.ExpressionMap;
 
+import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -27,15 +30,15 @@ import java.util.regex.Pattern;
  * Date:2015-05-05
  * Description:
  */
-public class ContextTextView extends TextView {
+public class ContentTextView extends TextView {
 
-    private static final Pattern TOPIC_URL = Pattern.compile("#[\\p{InCJK_UNIFIED_IDEOGRAPHS}\\w\\p{Print}&&[^#]]+#");
-    private static final Pattern AT_URL = Pattern.compile("@[\\p{InCJK_UNIFIED_IDEOGRAPHS}\\w-]+?(?=[:\\s])");
-    private static final Pattern HTTP_URL = Pattern.compile("http://[a-zA-Z0-9+&@#/%?=~_\\-|!:,\\.;]*[a-zA-Z0-9+&@#/%=~_|]");
+    public static final Pattern TOPIC_URL = Pattern.compile("#[\\p{InCJK_UNIFIED_IDEOGRAPHS}\\w\\p{Print}&&[^#]]+#");
+    public static final Pattern AT_URL = Pattern.compile("@[\\p{InCJK_UNIFIED_IDEOGRAPHS}\\w-]{1,20}");
+    public static final Pattern HTTP_URL = Pattern.compile("http://[a-zA-Z0-9+&@#/%?=~_\\-|!:,\\.;]*[a-zA-Z0-9+&@#/%=~_|]");
 
     private static final String TOPIC_SCHEME = "com.shine.look.weibo.topic://";
     private static final String AT_SCHEME = "com.shine.look.weibo.at://";
-    private static final String HTTP_SCHEME = "com.shine.look.weibo.http://";
+    private static final String HTTP_SCHEME = "com.shine.look.weibo.browser://";
 
     /**
      * 被按下时的背景颜色
@@ -66,23 +69,23 @@ public class ContextTextView extends TextView {
         }
     };
 
-    public ContextTextView(Context context) {
+    public ContentTextView(Context context) {
         super(context);
         init();
     }
 
-    public ContextTextView(Context context, AttributeSet attrs) {
+    public ContentTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public ContextTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ContentTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ContextTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ContentTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
@@ -101,15 +104,57 @@ public class ContextTextView extends TextView {
     public void dealWithText(CharSequence text) {
         Spannable spannable = new SpannableStringBuilder(text);
         //处理文字
-        Linkify.addLinks(spannable, TOPIC_URL, TOPIC_SCHEME);
-        Linkify.addLinks(spannable, AT_URL, AT_SCHEME);
-        Linkify.addLinks(spannable, HTTP_URL, HTTP_SCHEME);
+        addLinks(spannable, TOPIC_URL, TOPIC_SCHEME);
+        addLinks(spannable, AT_URL, AT_SCHEME);
+        addLinks(spannable, HTTP_URL, HTTP_SCHEME);
+
         ExpressionMap.addExpression(spannable);
         //取消下划线
         spannable.setSpan(mUnderlineSpan, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setText(spannable);
     }
 
+    private void addLinks(Spannable spannable, Pattern pattern, String scheme) {
+        Matcher matcher = pattern.matcher(spannable);
+        int start;
+        int end = 0;
+        String prefix = (scheme == null) ? "" : scheme.toLowerCase(Locale.ROOT);
+        while (matcher.find(end)) {
+            start = matcher.start();
+            end = matcher.end();
+
+            String url = makeUrl(matcher.group(0), new String[]{prefix});
+
+            WeiboTextUrlSpan span = new WeiboTextUrlSpan(url);
+            spannable.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+    }
+
+    private static final String makeUrl(String url, String[] prefixes) {
+        boolean hasPrefix = false;
+
+        for (int i = 0; i < prefixes.length; i++) {
+            if (url.regionMatches(true, 0, prefixes[i], 0,
+                    prefixes[i].length())) {
+                hasPrefix = true;
+
+                // Fix capitalization if necessary
+                if (!url.regionMatches(false, 0, prefixes[i], 0,
+                        prefixes[i].length())) {
+                    url = prefixes[i] + url.substring(prefixes[i].length());
+                }
+
+                break;
+            }
+        }
+
+        if (!hasPrefix) {
+            url = prefixes[0] + url;
+        }
+
+        return url;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

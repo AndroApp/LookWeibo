@@ -1,14 +1,16 @@
 package com.shine.look.weibo.ui.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.ui.fragment.HomeFragment;
+import com.shine.look.weibo.ui.utils.AnimationUtils;
 import com.shine.look.weibo.utils.Utils;
 
 /**
@@ -29,6 +31,9 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initializeToolbar();
+
         if (savedInstanceState == null) {
             mPendingIntroAnimation = true;
         }
@@ -54,7 +59,7 @@ public class MainActivity extends BaseActivity {
             getInboxMenuItem().getActionView().setTranslationY(-actionbarSize);
             //addFragment
             mCurrentFragment = new HomeFragment();
-            FragmentManager fragmentManager = getFragmentManager();
+            FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().add(R.id.contentFrame, mCurrentFragment).commit();
             //开始入场动画
             getToolbar().animate()
@@ -78,5 +83,34 @@ public class MainActivity extends BaseActivity {
         context.startActivity(intent);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!isTaskTop()) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (getDrawerToggle() != null && getDrawerLayout() != null) {
+                        getDrawerToggle().onDrawerOpened(getDrawerLayout());
+                    }
+                    if (getInboxMenuItem() != null) {
+                        getInboxMenuItem().getActionView().setScaleY(0);
+                        getInboxMenuItem().getActionView().setScaleX(0);
+                    }
+
+                }
+            }, 300);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isTaskTop()) {
+            setTaskTop(true);
+            AnimationUtils.arrowToMenuAnimator(getDrawerToggle(), getDrawerLayout());
+            AnimationUtils.scaleToOriginalAnimator(getInboxMenuItem().getActionView());
+        }
+    }
 
 }

@@ -4,7 +4,7 @@ import com.shine.weibosdk.openapi.models.Geo;
 import com.shine.weibosdk.openapi.models.User;
 import com.shine.weibosdk.openapi.models.Visible;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * User:Shine
@@ -105,7 +105,7 @@ public class Status {
     /**
      * 微博配图地址。多图时返回多图链接。无配图返回"[]"
      */
-    public List<ThumbnailPic> pic_urls;
+    public ArrayList<ThumbnailPic> pic_urls;
 
 
 }

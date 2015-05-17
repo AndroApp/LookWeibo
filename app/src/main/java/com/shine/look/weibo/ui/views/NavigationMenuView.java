@@ -1,8 +1,11 @@
 package com.shine.look.weibo.ui.views;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,13 +13,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.medel.BaseModel;
 import com.shine.look.weibo.medel.UserModel;
 import com.shine.look.weibo.ui.adapter.NavigationAdapter;
 import com.shine.look.weibo.ui.utils.CircleTransformation;
 import com.shine.weibosdk.openapi.models.User;
-import com.squareup.picasso.Picasso;
 
 /**
  * User:Shine
@@ -36,6 +39,23 @@ public class NavigationMenuView extends ListView implements View.OnClickListener
         super(context);
         init();
     }
+
+    public NavigationMenuView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public NavigationMenuView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public NavigationMenuView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
 
     private void init() {
         //让ListView进入选择模式
@@ -75,11 +95,11 @@ public class NavigationMenuView extends ListView implements View.OnClickListener
     public void onSuccess(User user) {
         if (mIvUserProfilePhoto != null) {
             String avatarUrl = user.avatar_large != null && !user.avatar_large.equals("") ? user.avatar_large : user.profile_url;
-            Picasso.with(getContext())
+            Glide.with(getContext())
                     .load(avatarUrl)
-                    .resize(mAvatarSize, mAvatarSize)
+                    .override(mAvatarSize, mAvatarSize)
                     .centerCrop()
-                    .transform(new CircleTransformation())
+                    .transform(new CircleTransformation(getContext()))
                     .into(mIvUserProfilePhoto);
             mIvUserProfilePhoto.setOnClickListener(this);
         }

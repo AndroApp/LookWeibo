@@ -2,6 +2,7 @@ package com.shine.look.weibo.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -18,7 +19,7 @@ import com.sina.weibo.sdk.exception.WeiboException;
  * Date:2015-05-03
  * Description:微博授权页
  */
-public class WBAuthActivity extends BaseActivity {
+public class WBAuthActivity extends AppCompatActivity {
 
     private SsoHandler mSsoHandler;
 
@@ -84,8 +85,4 @@ public class WBAuthActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected boolean shouldInstallDrawer() {
-        return false;
-    }
 }

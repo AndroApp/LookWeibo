@@ -1,5 +1,7 @@
 package com.shine.look.weibo.ui.fragment;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -8,14 +10,26 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.HomeInfo;
+import com.shine.look.weibo.bean.ThumbnailPic;
 import com.shine.look.weibo.medel.BaseModel;
 import com.shine.look.weibo.medel.HomeModel;
+import com.shine.look.weibo.ui.activity.MainActivity;
+import com.shine.look.weibo.ui.activity.ShowPictureActivity;
 import com.shine.look.weibo.ui.adapter.HomeWeiboAdapter;
+import com.shine.look.weibo.ui.adapter.ThumbnailPicAdapter;
+import com.shine.look.weibo.ui.transition.ActivityTransitionLauncher;
 import com.shine.look.weibo.ui.views.LoadMoreRecyclerView;
+import com.shine.look.weibo.ui.views.WeiboContentView;
+import com.shine.look.weibo.utils.Utils;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -25,8 +39,13 @@ import butterknife.InjectView;
  * Date:2015-05-11
  * Description:
  */
-public class HomeFragment extends BaseFragment implements BaseModel.OnRequestListener<HomeInfo>, SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnRefreshEndListener {
+public class HomeFragment extends BaseFragment implements BaseModel.OnRequestListener<HomeInfo>
+        , SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnRefreshEndListener
+        , WeiboContentView.OnPictureListener, ThumbnailPicAdapter.OnThumbnailPicListener {
 
+    public static final String ARG_PICTURE_URL = "com.shine.look.weibo.picUrl";
+    public static final String ARG_PICTURE_POSITION = "com.shine.look.weibo.picPosition";
+    public static final String ARG_PICTURE_LIST_URL = "com.shine.look.weibo.list_picUrl";
 
     private HomeWeiboAdapter mAdapter;
 
@@ -59,7 +78,9 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
         mSwipeContainer.setOnRefreshListener(this);
         mSwipeContainer.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
 
-        mAdapter = new HomeWeiboAdapter(getActivity());
+        RequestManager requestManager = Glide.with(this);
+        mAdapter = new HomeWeiboAdapter(getActivity(), requestManager, this);
+        mAdapter.setOnThumbnailPicListener(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         mRvHome.setLayoutManager(linearLayoutManager);
         mRvHome.setAdapter(mAdapter);
@@ -118,6 +139,32 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
         if (mModel != null) {
             mModel.setMaxId(mAdapter.getMaxId() - 1);
             mModel.request();
+        }
+    }
+
+    @Override
+    public void onPictureClick(View v) {
+        ImageView imageView = (ImageView) v;
+        String picUrl = (String) imageView.getTag();
+        Drawable drawable = imageView.getDrawable();
+        final Intent intent = new Intent(getActivity(), ShowPictureActivity.class);
+        intent.putExtra(ARG_PICTURE_URL, picUrl);
+        ActivityTransitionLauncher.with(getActivity()).from(imageView).image(Utils.drawableToBitmap(drawable)).launch(intent);
+        ((MainActivity) getActivity()).setTaskTop(true);
+    }
+
+    @Override
+    public void onThumbnailPicClick(View v, int position, ArrayList<ThumbnailPic> data) {
+        ImageView imageView = (ImageView) v;
+        Drawable drawable = imageView.getDrawable();
+        final Intent intent = new Intent(getActivity(), ShowPictureActivity.class);
+        intent.putExtra(ARG_PICTURE_POSITION, position);
+        intent.putParcelableArrayListExtra(ARG_PICTURE_LIST_URL, data);
+        if (drawable == null) {
+            startActivity(intent);
+        } else {
+            ActivityTransitionLauncher.with(getActivity()).from(imageView).image(Utils.drawableToBitmap(drawable)).launch(intent);
+            ((MainActivity) getActivity()).setTaskTop(true);
         }
     }
 }

@@ -18,13 +18,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.Status;
 import com.shine.look.weibo.ui.adapter.ThumbnailPicAdapter;
 import com.shine.look.weibo.ui.utils.ScaledTransformation;
 import com.shine.look.weibo.utils.Constants;
 import com.shine.look.weibo.utils.Utils;
-import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -39,13 +40,18 @@ public class WeiboContentView extends RelativeLayout {
     private static final int COLUMN_COUNT = 3;
     private static final int mAvatarSize = 50;
 
-    private static final int ROOT_PIC_WIDTH = Utils.getScreenWidth() - Utils.dpToPx(36);
-    private static final int RETWEETED_PIC_WIDTH = ROOT_PIC_WIDTH - Utils.dpToPx(24);
+    private static final int ROOT_PIC_WIDTH = Utils.getScreenWidth() - Utils.dpToPx(32);
+    private static final int RETWEETED_PIC_WIDTH = ROOT_PIC_WIDTH - Utils.dpToPx(32);
 
+    private ThumbnailPicAdapter.OnThumbnailPicListener mOnThumbnailPicListener;
     private ScaledTransformation mTransformation;
+    private RequestManager mGlide;
+    private String mPicUrl;
+
+    private OnPictureListener mOnPictureListener;
 
     @InjectView(R.id.tvText)
-    ContextTextView mTvText;//文字内容
+    ContentTextView mTvText;//文字内容
     @InjectView(R.id.rvThumbnailPic)
     RecyclerView mRvThumbnailPic;//缩略图
     @InjectView(R.id.ivLargePic)
@@ -58,6 +64,7 @@ public class WeiboContentView extends RelativeLayout {
     DateTextView mTvCreatedTime;//发表时间
     @InjectView(R.id.tvSource)
     TextView mTvSource;//来源
+
 
     public WeiboContentView(Context context) {
         super(context);
@@ -90,7 +97,16 @@ public class WeiboContentView extends RelativeLayout {
                 return true;
             }
         });
-        mTransformation = new ScaledTransformation();
+        mTransformation = new ScaledTransformation(getContext());
+        mIvLargePic.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnPictureListener != null) {
+                    v.setTag(mPicUrl);
+                    mOnPictureListener.onPictureClick(v);
+                }
+            }
+        });
     }
 
     public void setWeiboContent(Status status, boolean isRetweeted) {
@@ -98,9 +114,15 @@ public class WeiboContentView extends RelativeLayout {
             if (status.user == null) {
                 mTvText.dealWithText(status.text);
                 mIvUserProfile.setVisibility(View.GONE);
+                mTvUserName.setVisibility(View.GONE);
+                mTvCreatedTime.setVisibility(View.GONE);
+                mTvSource.setVisibility(View.GONE);
                 return;
             }
             mIvUserProfile.setVisibility(View.VISIBLE);
+            mTvUserName.setVisibility(View.VISIBLE);
+            mTvCreatedTime.setVisibility(View.VISIBLE);
+            mTvSource.setVisibility(View.VISIBLE);
             //用户名
             mTvUserName.setText(status.user.screen_name);
             //发表时间
@@ -116,8 +138,9 @@ public class WeiboContentView extends RelativeLayout {
             }, 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             mTvSource.setText(spannable);
             //用户头像
-            Picasso.with(getContext())
-                    .load(status.user.profile_image_url)
+            mGlide.load(status.user.profile_image_url)
+                    .asBitmap()
+                    .override(mAvatarSize, mAvatarSize)
                     .into(mIvUserProfile);
             //微博文字内容
             mTvText.dealWithText(status.text + " ");
@@ -129,17 +152,22 @@ public class WeiboContentView extends RelativeLayout {
             } else if (picSize == 1) {
                 mIvLargePic.setVisibility(View.VISIBLE);
                 mRvThumbnailPic.setVisibility(View.GONE);
-                String largeUrl = status.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_LARGE_PATH);
+                // mPicUrl = "http://ww1.sinaimg.cn/large/7fd54a81tw1erwr8ox7x9j20cs4817uy.jpg";
+                mPicUrl = status.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_LARGE_PATH);
                 mTransformation.setBitmapWidth(isRetweeted ? RETWEETED_PIC_WIDTH : ROOT_PIC_WIDTH);
-                mTransformation.setGifLabel(largeUrl.indexOf(".gif") != -1);
-                Picasso.with(getContext())
-                        .load(largeUrl)
+                mTransformation.setGifLabel(mPicUrl.indexOf(".gif") != -1);
+                mGlide.load(mPicUrl)
+                        .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .transform(mTransformation)
                         .into(mIvLargePic);
+
             } else if (picSize > 1) {
                 mIvLargePic.setVisibility(View.GONE);
                 mRvThumbnailPic.setVisibility(View.VISIBLE);
-                mRvThumbnailPic.setAdapter(new ThumbnailPicAdapter(getContext(), status.pic_urls));
+                ThumbnailPicAdapter adapter = new ThumbnailPicAdapter(getContext(), status.pic_urls, mGlide);
+                adapter.setOnThumbnailPicListener(mOnThumbnailPicListener);
+                mRvThumbnailPic.setAdapter(adapter);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,5 +193,22 @@ public class WeiboContentView extends RelativeLayout {
 
             }*/
     }
+
+    public void setGlide(RequestManager glide) {
+        mGlide = glide;
+    }
+
+    public void setOnPictureListener(OnPictureListener onPictureListener) {
+        mOnPictureListener = onPictureListener;
+    }
+
+    public void setOnThumbnailPicListener(ThumbnailPicAdapter.OnThumbnailPicListener listener) {
+        mOnThumbnailPicListener = listener;
+    }
+
+    public interface OnPictureListener {
+        public void onPictureClick(View v);
+    }
+
 
 }

@@ -9,7 +9,7 @@
         android:layout_height="35dp"
         android:layout_marginBottom="4dp"
         android:layout_marginRight="8dp"
-        tools:src="@mipmap/ic_launcher"/>
+        tools:src="@drawable/ic_launcher"/>
 
 
     <TextView
@@ -46,7 +46,7 @@
         android:textSize="12sp"
         tools:text="source"/>
 
-    <com.shine.look.weibo.ui.views.ContextTextView
+    <com.shine.look.weibo.ui.views.ContentTextView
         android:id="@id/tvText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

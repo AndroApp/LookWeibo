@@ -3,7 +3,6 @@ package com.shine.look.weibo.utils;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,9 +66,7 @@ public class ToastHelper {
     private static void show(Context context, String str, int resId, int gravity) {
         View toastView = LayoutInflater.from(context).inflate(R.layout.layout_toast_image, null);
         TextView messageText = (TextView) toastView.findViewById(R.id.toast_message);
-        ImageView image = (ImageView) toastView.findViewById(R.id.toast_image);
         messageText.setText(str);
-        image.setImageResource(resId);
         Toast toast = new Toast(context);
         toast.setView(toastView);
         toast.setDuration(Toast.LENGTH_SHORT);

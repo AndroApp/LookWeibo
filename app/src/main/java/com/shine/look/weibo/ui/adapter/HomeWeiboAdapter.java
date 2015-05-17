@@ -1,6 +1,6 @@
 package com.shine.look.weibo.ui.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.Status;
 import com.shine.look.weibo.ui.views.WeiboContentView;
@@ -35,7 +36,9 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     private static final int VIEW_TYPE_LOADING = 2;
 
     private final LayoutInflater mInflater;
-    private final Context mContext;
+    private final Activity mActivity;
+    private final RequestManager mRequestManager;
+    private final WeiboContentView.OnPictureListener mOnPictureListener;
 
     private List<Status> mData;
     private boolean mAnimateItems = true;
@@ -46,11 +49,15 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     private int mLastAnimatedPosition = -1;
 
     private boolean isVisibleLoading;
+    private ThumbnailPicAdapter.OnThumbnailPicListener mOnThumbnailPicListener;
 
-    public HomeWeiboAdapter(Context context) {
+
+    public HomeWeiboAdapter(Activity activity, RequestManager requestManager, WeiboContentView.OnPictureListener listener) {
         this.mData = new ArrayList<>();
-        this.mInflater = LayoutInflater.from(context);
-        this.mContext = context;
+        this.mInflater = LayoutInflater.from(activity);
+        this.mActivity = activity;
+        this.mRequestManager = requestManager;
+        this.mOnPictureListener = listener;
     }
 
     @Override
@@ -61,6 +68,12 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         } else {
             View rootView = mInflater.inflate(R.layout.item_home_weibo, parent, false);
             HomeWeiboViewHolder holder = new HomeWeiboViewHolder(rootView);
+            holder.flWeiboContent.setGlide(mRequestManager);
+            holder.flWeiboContent.setOnPictureListener(mOnPictureListener);
+            holder.flRetweetedContent.setGlide(mRequestManager);
+            holder.flRetweetedContent.setOnPictureListener(mOnPictureListener);
+            holder.flWeiboContent.setOnThumbnailPicListener(mOnThumbnailPicListener);
+            holder.flRetweetedContent.setOnThumbnailPicListener(mOnThumbnailPicListener);
             return holder;
         }
     }
@@ -72,10 +85,11 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
             Status status = mData.get(position);
             //微博内容
             holder.flWeiboContent.setWeiboContent(status, false);
-
             //转发的微博
             if (status.retweeted_status != null) {
                 holder.cvRetweetedContent.setVisibility(View.VISIBLE);
+                int[] i = new int[2];
+                holder.flRetweetedContent.getLocationOnScreen(i);
                 holder.flRetweetedContent.setWeiboContent(status.retweeted_status, true);
             } else {
                 holder.cvRetweetedContent.setVisibility(View.GONE);
@@ -161,6 +175,9 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         return Long.parseLong(mData.get(mData.size() - 1).id);
     }
 
+    public void setOnThumbnailPicListener(ThumbnailPicAdapter.OnThumbnailPicListener listener) {
+        mOnThumbnailPicListener = listener;
+    }
 
     public static class HomeWeiboViewHolder extends RecyclerView.ViewHolder {
         @Optional

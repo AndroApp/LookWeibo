@@ -9,13 +9,17 @@
     <item name="drawerLayout" type="id"/>
     <item name="rvHome" type="id"/>
     <item name="ivLargePic" type="id"/>
+    <item name="ivLargeTouchPic" type="id"/>
+    <item name="gvpLargeTouchPics" type="id"/>
+    <item name="gallery_item_image" type="id"/>
+    <item name="gallery_item_gif_image" type="id"/>
+    <item name="gallery_item_progress" type="id"/>
     <item name="rvThumbnailPic" type="id"/>
     <item name="ivThumbnailPic" type="id"/>
     <item name="flWeiboContent" type="id"/>
     <item name="flRetweetedContent" type="id"/>
     <item name="cvRetweetedContent" type="id"/>
     <item name="toast_message" type="id"/>
-    <item name="toast_image" type="id"/>
     <item name="btnReposts" type="id"/>
     <item name="btnComments" type="id"/>
     <item name="tvRepostsCount" type="id"/>
@@ -26,4 +30,23 @@
     <item name="ivIcon" type="id"/>
     <item name="tvLabel" type="id"/>
     <item name="ivUserProfilePhoto" type="id"/>
+    <item name="pbBrowser" type="id"/>
+    <item name="ivShowPicture" type="id"/>
+    <item name="svShowPicture" type="id"/>
+    <item name="ivBack" type="id"/>
+    <item name="toolbar" type="id"/>
+    <item name="flBrowser" type="id"/>
+    <item name="ivLogo" type="id"/>
+    <item name="drawerList" type="id"/>
+    <item name="drawerHeader" type="id"/>
+    <item name="btnSearch" type="id"/>
+    <item name="btnInbox" type="id"/>
+    <item name="btnRefresh" type="id"/>
+    <item name="btnCopy" type="id"/>
+    <item name="btnShare" type="id"/>
+    <item name="btnBrowserOpen" type="id"/>
+    <item name="pic_tag_id" type="id"/>
+    <item name="llShowPictureBg" type="id"/>
+    <item name="ivMore" type="id"/>
+    <item name="tvCurrentPage" type="id"/>
 </resources>

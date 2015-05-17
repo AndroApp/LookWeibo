@@ -1,21 +1,23 @@
 package com.shine.look.weibo.ui.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.WeiboApplication;
 import com.shine.look.weibo.utils.Utils;
-import com.squareup.picasso.Transformation;
 
 /**
  * User:Shine
  * Date:2015-05-10
  * Description:
  */
-public class LabelTransform implements Transformation {
+public class LabelTransform extends BitmapTransformation {
 
     private static final String LABEL_TEXT_GIF = "GIF";
 
@@ -24,7 +26,8 @@ public class LabelTransform implements Transformation {
     private final Rect mRect;
     private final int mBaseLine;
 
-    public LabelTransform() {
+    public LabelTransform(Context context) {
+        super(context);
         mBGPaint = new Paint();
         mTextPaint = new Paint();
         mBGPaint.setColor(WeiboApplication.getContext().getResources().getColor(R.color.colorAccent));
@@ -41,15 +44,19 @@ public class LabelTransform implements Transformation {
     }
 
     @Override
-    public Bitmap transform(Bitmap source) {
-        Canvas canvas = new Canvas(source);
+    protected Bitmap transform(BitmapPool pool, Bitmap source, int outWidth, int outHeight) {
+        Bitmap bitmap = Bitmap.createScaledBitmap(source, outWidth, outHeight, true);
+        if (bitmap != source) {
+            source.recycle();
+        }
+        Canvas canvas = new Canvas(bitmap);
         canvas.drawRect(mRect, mBGPaint);
         canvas.drawText(LABEL_TEXT_GIF, mRect.centerX(), mBaseLine, mTextPaint);
-        return source;
+        return bitmap;
     }
 
     @Override
-    public String key() {
-        return "LabelTransform";
+    public String getId() {
+        return "com.shine.look.weibo.LabelTransform";
     }
 }
