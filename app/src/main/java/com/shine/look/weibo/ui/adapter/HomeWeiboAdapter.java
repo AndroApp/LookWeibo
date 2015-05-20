@@ -29,26 +29,24 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
 
     private final LayoutInflater mInflater;
     private final RequestManager mRequestManager;
-    private final WeiboContentView.OnPictureListener mOnPictureListener;
 
     private List<Status> mData;
-    private boolean mAnimateItems = true;
     private OnFeedItemClickListener mOnFeedItemClickListener;
+    private WeiboContentView.OnPictureListener mOnPictureListener;
+    private ThumbnailPicAdapter.OnThumbnailPicListener mOnThumbnailPicListener;
+    private boolean mAnimateItems = true;
+    private boolean isVisibleLoading;
 
     /**
      * 最后一个进行动画的item的位置
      */
     private int mLastAnimatedPosition = -1;
 
-    private boolean isVisibleLoading;
-    private ThumbnailPicAdapter.OnThumbnailPicListener mOnThumbnailPicListener;
 
-
-    public HomeWeiboAdapter(Activity activity, RequestManager requestManager, WeiboContentView.OnPictureListener listener) {
+    public HomeWeiboAdapter(Activity activity, RequestManager requestManager) {
         this.mData = new ArrayList<>();
         this.mInflater = LayoutInflater.from(activity);
         this.mRequestManager = requestManager;
-        this.mOnPictureListener = listener;
     }
 
     @Override
@@ -177,6 +175,10 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         this.mOnFeedItemClickListener = listener;
     }
 
+    public void setOnPictureListener(WeiboContentView.OnPictureListener onPictureListener) {
+        mOnPictureListener = onPictureListener;
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -187,7 +189,6 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
                 break;
             case R.id.btnComments:
                 if (mOnFeedItemClickListener != null) {
-                    int i = (int) v.getTag();
                     mOnFeedItemClickListener.onCommentsClick(v, mData.get((Integer) v.getTag()).idstr);
                 }
                 break;

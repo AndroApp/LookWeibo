@@ -84,7 +84,7 @@ public class NavigationMenuView extends ListView implements View.OnClickListener
     }
 
     private void setUserPhoto() {
-        UserModel model = new UserModel((Activity) getContext());
+        UserModel model = new UserModel((Activity) getContext(), null, null);
         model.setOnRequestListener(this);
         model.setCache(true);
         model.request();

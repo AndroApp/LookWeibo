@@ -7,16 +7,20 @@
     <com.shine.look.weibo.ui.views.RevealBackgroundView
         android:id="@id/vRevealBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
-    <include layout="@layout/layout_toolbar"/>
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/layout_toolbar"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvUserProfile"
+        android:id="@id/rvUserProfile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="?attr/actionBarSize"/>
-
+        android:layout_below="@id/toolbar"
+        android:background="@color/white"
+        android:visibility="gone"/>
 
 
 </RelativeLayout>

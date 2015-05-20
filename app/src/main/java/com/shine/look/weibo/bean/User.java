@@ -83,7 +83,11 @@ public class User implements Parcelable {
     public String mbtype;
     public String mbrank;
     public String block_word;
+    public String cover_image_phone;
 
+
+    public User() {
+    }
 
     @Override
     public int describeContents() {
@@ -129,9 +133,7 @@ public class User implements Parcelable {
         dest.writeString(this.mbtype);
         dest.writeString(this.mbrank);
         dest.writeString(this.block_word);
-    }
-
-    public User() {
+        dest.writeString(this.cover_image_phone);
     }
 
     private User(Parcel in) {
@@ -160,6 +162,7 @@ public class User implements Parcelable {
         this.verified = in.readByte() != 0;
         this.verified_type = in.readInt();
         this.remark = in.readString();
+        this.status = in.readParcelable(Status.class.getClassLoader());
         this.allow_all_comment = in.readByte() != 0;
         this.avatar_large = in.readString();
         this.avatar_hd = in.readString();
@@ -172,9 +175,10 @@ public class User implements Parcelable {
         this.mbtype = in.readString();
         this.mbrank = in.readString();
         this.block_word = in.readString();
+        this.cover_image_phone = in.readString();
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         public User createFromParcel(Parcel source) {
             return new User(source);
         }

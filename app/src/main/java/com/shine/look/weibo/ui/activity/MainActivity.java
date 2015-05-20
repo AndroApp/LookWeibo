@@ -1,5 +1,7 @@
 package com.shine.look.weibo.ui.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -64,10 +66,6 @@ public class MainActivity extends BaseActivity {
             getToolbar().setTranslationY(-actionbarSize);
             getIvLogo().setTranslationY(-actionbarSize);
             getInboxMenuItem().getActionView().setTranslationY(-actionbarSize);
-            //addFragment
-            mCurrentFragment = new HomeFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().add(R.id.contentFrame, mCurrentFragment).commit();
             //开始入场动画
             getToolbar().animate()
                     .translationY(0)
@@ -80,6 +78,15 @@ public class MainActivity extends BaseActivity {
                     .translationY(0)
                     .setDuration(ANIM_DURATION_TOOLBAR)
                     .setStartDelay(200)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            //addFragment
+                            mCurrentFragment = new HomeFragment();
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            fragmentManager.beginTransaction().add(R.id.contentFrame, mCurrentFragment).commit();
+                        }
+                    })
                     .start();
 
         }

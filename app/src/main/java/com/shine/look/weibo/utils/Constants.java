@@ -25,6 +25,7 @@ public class Constants {
     public static final String URL_COMMENTS_PATH = "https://api.weibo.com/2/comments/show.json?";    //获取微博评论路径
     public static final String URL_USER_PATH = "https://api.weibo.com/2/users/show.json?";    //查询用户信息路径
     public static final String URL_WRITE_COMMENT_PATH = "https://api.weibo.com/2/comments/create.json?";    //对某微博评论路径
+    public static final String URL_USER_TIMELINE_PATH = "https://api.weibo.com/2/statuses/user_timeline.json?";    //对某微博评论路径
 
 
     public static final String URL_THUMBNAIL_PATH = "/thumbnail/";

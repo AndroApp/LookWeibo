@@ -33,7 +33,7 @@ import com.shine.look.weibo.utils.Utils;
  * Date:2015-05-10
  * Description:
  */
-public class WeiboContentView extends RelativeLayout {
+public class WeiboContentView extends RelativeLayout implements View.OnClickListener {
 
     private static final int COLUMN_COUNT = 3;
     private static final int mAvatarSize = 50;
@@ -97,15 +97,8 @@ public class WeiboContentView extends RelativeLayout {
             }
         });
         mTransformation = new ScaledTransformation(getContext());
-        mIvLargePic.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnPictureListener != null) {
-                    v.setTag(mPicUrl);
-                    mOnPictureListener.onPictureClick(v);
-                }
-            }
-        });
+        mIvLargePic.setOnClickListener(this);
+        mIvUserProfile.setOnClickListener(this);
     }
 
     public void setWeiboContent(Status status, boolean isRetweeted) {
@@ -141,6 +134,7 @@ public class WeiboContentView extends RelativeLayout {
                     .asBitmap()
                     .override(mAvatarSize, mAvatarSize)
                     .into(mIvUserProfile);
+            mIvUserProfile.setTag(status.user.idstr);
             //微博文字内容
             mTvText.dealWithText(status.text + " ");
             //微博图片
@@ -151,7 +145,7 @@ public class WeiboContentView extends RelativeLayout {
             } else if (picSize == 1) {
                 mIvLargePic.setVisibility(View.VISIBLE);
                 mRvThumbnailPic.setVisibility(View.GONE);
-                // mPicUrl = "http://ww1.sinaimg.cn/large/7fd54a81tw1erwr8ox7x9j20cs4817uy.jpg";
+
                 mPicUrl = status.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_BMIDDLE_PATH);
                 mTransformation.setBitmapWidth(isRetweeted ? RETWEETED_PIC_WIDTH : ROOT_PIC_WIDTH);
                 mTransformation.setGifLabel(mPicUrl.indexOf(".gif") != -1);
@@ -160,7 +154,7 @@ public class WeiboContentView extends RelativeLayout {
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .transform(mTransformation)
                         .into(mIvLargePic);
-
+                mIvLargePic.setTag(mPicUrl);
             } else if (picSize > 1) {
                 mIvLargePic.setVisibility(View.GONE);
                 mRvThumbnailPic.setVisibility(View.VISIBLE);
@@ -205,8 +199,27 @@ public class WeiboContentView extends RelativeLayout {
         mOnThumbnailPicListener = listener;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ivLargePic:
+                if (mOnPictureListener != null) {
+                    mOnPictureListener.onPictureClick(v);
+                }
+                break;
+            case R.id.ivUserProfile:
+                if (mOnPictureListener != null) {
+                    mOnPictureListener.onHeaderPicClick(v);
+                }
+                break;
+        }
+
+    }
+
     public interface OnPictureListener {
         public void onPictureClick(View v);
+
+        public void onHeaderPicClick(View v);
     }
 
 

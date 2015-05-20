@@ -3,10 +3,13 @@
     <item name="ivUserProfile" type="id"/>
     <item name="tvUserName" type="id"/>
     <item name="tvCreatedTime" type="id"/>
+    <item name="btnFollow" type="id"/>
+    <item name="cover_image_phone" type="id"/>
     <item name="tvSource" type="id"/>
     <item name="tvText" type="id"/>
     <item name="swipe_container" type="id"/>
     <item name="vRevealBackground" type="id"/>
+    <item name="rvUserProfile" type="id"/>
     <item name="edWriteComment" type="id"/>
     <item name="tvWriteMaxLength" type="id"/>
     <item name="drawerLayout" type="id"/>
@@ -33,6 +36,11 @@
     <item name="ivIcon" type="id"/>
     <item name="tvLabel" type="id"/>
     <item name="ivUserProfilePhoto" type="id"/>
+    <item name="tvUserProfileName" type="id"/>
+    <item name="tvUserProfileInfo" type="id"/>
+    <item name="tvWeiboNum" type="id"/>
+    <item name="tvFansNum" type="id"/>
+    <item name="tvAttentionNum" type="id"/>
     <item name="pbBrowser" type="id"/>
     <item name="ivShowPicture" type="id"/>
     <item name="svShowPicture" type="id"/>

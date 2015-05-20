@@ -191,7 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         int[] startingLocation = new int[2];
         v.getLocationOnScreen(startingLocation);
         startingLocation[0] += v.getWidth() / 2;
-        UserActivity.start(this, null, toolBarIsMenu(), toolBarMenuResId(), startingLocation);
+        UserProfileActivity.start(this, null, toolBarIsMenu(), toolBarMenuResId(), startingLocation);
     }
 
 }

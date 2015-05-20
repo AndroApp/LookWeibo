@@ -22,7 +22,7 @@ import java.util.Map;
  * Date:2015-05-04
  * Description:
  */
-public abstract class BaseModel {
+public abstract class BaseModel implements Response.Listener<String> {
 
     private static final String TAG = LogHelper.makeLogTag(BaseModel.class);
 
@@ -42,10 +42,9 @@ public abstract class BaseModel {
 
     private boolean isDiskCache;
 
-    private Activity mActivity;
+    private Class mClazz;
 
     public BaseModel(Activity activity) {
-        this.mActivity = activity;
         this.isDiskCache = true;
         this.mAccessToken = AccessTokenKeeper.readAccessToken();
     }
@@ -54,6 +53,7 @@ public abstract class BaseModel {
 
     protected void executeRequest(final Class clazz) {
         final String url = getUrl();
+        mClazz = clazz;
         if (isDiskCache) {
             isDiskCache = false;
             String jsonStr = FileHelper.loadFile(url, mAccessToken.getUid());
@@ -62,18 +62,7 @@ public abstract class BaseModel {
                 return;
             }
         }
-        StringRequest request = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String json) {
-                if (isCache) {
-                    isCache = false;
-                    FileHelper.saveFile(url, mAccessToken.getUid(), json);
-                }
-                if (onRequestListener != null) {
-                    onRequestListener.onSuccess(mGson.fromJson(json, clazz));
-                }
-            }
-        }, new Response.ErrorListener() {
+        StringRequest request = new StringRequest(url, this, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 try {
@@ -87,7 +76,7 @@ public abstract class BaseModel {
                 }
             }
         });
-        RequestManager.addRequest(request, mActivity);
+        RequestManager.addRequest(request, null);
     }
 
     protected void executeRequest(Map<String, String> params, final Class clazz) {
@@ -107,9 +96,20 @@ public abstract class BaseModel {
             }
         });
 
-        RequestManager.addRequest(request, mActivity);
+        RequestManager.addRequest(request, null);
     }
 
+
+    @Override
+    public void onResponse(String s) {
+        if (isCache) {
+            isCache = false;
+            FileHelper.saveFile(getUrl(), mAccessToken.getUid(), s);
+        }
+        if (onRequestListener != null) {
+            onRequestListener.onSuccess(mGson.fromJson(s, mClazz));
+        }
+    }
 
     /**
      * @return 请求的url，不能返回null

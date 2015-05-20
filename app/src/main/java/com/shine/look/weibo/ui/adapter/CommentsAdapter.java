@@ -64,7 +64,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             Comment comment = mData.get(position);
 
             holder.tvUserName.setText(comment.user.name);
-            holder.tvComment.dealWithText(comment.text);
+            holder.tvComment.dealWithText(comment.text + " ");
             holder.tvCreatedTime.setTextByDate(comment.created_at);
             String avatarUrl = comment.user.avatar_large;
             if (avatarUrl.equals("")) {

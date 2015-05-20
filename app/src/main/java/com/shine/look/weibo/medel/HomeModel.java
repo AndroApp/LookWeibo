@@ -14,6 +14,8 @@ import com.shine.look.weibo.utils.Constants;
 public class HomeModel extends BaseModel {
 
     private long mMaxId;
+    private String mPath;
+    private String mUid;
 
     public HomeModel(Activity activity) {
         super(activity);
@@ -21,8 +23,11 @@ public class HomeModel extends BaseModel {
 
     @Override
     public void request() {
-        if (mMaxId == 0) {
+        if (mMaxId == 0 && mUid == null) {
             setCache(true);
+        } else {
+            setCache(false);
+            setDiskCache(false);
         }
         executeRequest(HomeInfo.class);
     }
@@ -30,11 +35,15 @@ public class HomeModel extends BaseModel {
     @Override
     protected String getUrl() {
         RequestParams params = new RequestParams();
-        params.setPath(Constants.URL_HOME_PATH);
+        params.setPath(mPath == null ? Constants.URL_HOME_PATH : mPath);
         params.put(Constants.ARG_ACCESS_TOKEN, mAccessToken.getToken());
         params.put(Constants.ARG_MAX_ID, getMaxId());
         params.put(Constants.ARG_COUNT, Constants.PAGE_COUNT);
-        return params.getUrl();
+        if (mUid != null) {
+            params.put(Constants.ARG_USER_ID, mUid);
+        }
+        String s = params.getUrl();
+        return s;
     }
 
     public long getMaxId() {
@@ -43,5 +52,13 @@ public class HomeModel extends BaseModel {
 
     public void setMaxId(long maxId) {
         mMaxId = maxId;
+    }
+
+    public void setPath(String path) {
+        mPath = path;
+    }
+
+    public void setUid(String uid) {
+        mUid = uid;
     }
 }

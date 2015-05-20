@@ -14,7 +14,7 @@
         android:layout_marginTop="24dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivUserProfilePhoto"
+            android:id="@id/ivUserProfilePhoto"
             android:layout_width="@dimen/navigation_menu_avatar_size"
             android:layout_height="@dimen/navigation_menu_avatar_size"
             android:layout_margin="12dp"
