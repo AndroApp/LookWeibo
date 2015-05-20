@@ -35,7 +35,7 @@ public class WBAuthActivity extends AppCompatActivity {
             MainActivity.start(this);
             finish();
         } else {
-            AuthInfo mAuthInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
+            AuthInfo mAuthInfo = new AuthInfo(getApplicationContext(), Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
             mSsoHandler = new SsoHandler(this, mAuthInfo);
             mSsoHandler.authorize(new AuthListener());
         }

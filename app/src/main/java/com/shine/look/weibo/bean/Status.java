@@ -1,7 +1,7 @@
 package com.shine.look.weibo.bean;
 
+
 import com.shine.weibosdk.openapi.models.Geo;
-import com.shine.weibosdk.openapi.models.User;
 import com.shine.weibosdk.openapi.models.Visible;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * Date:2015-05-04
  * Description:
  */
-public class Status {
+public class Status  {
     /**
      * 微博ID
      */

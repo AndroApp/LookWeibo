@@ -7,41 +7,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.bean.Status;
 import com.shine.look.weibo.ui.views.WeiboContentView;
+import com.shine.look.weibo.utils.Constants;
 import com.shine.look.weibo.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.Optional;
 
 /**
  * User:Shine
  * Date:2015-05-04
  * Description:
  */
-public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.HomeWeiboViewHolder> {
-
-    //截取新浪短网址
-    //public final Pattern mVideoPattern = Pattern.compile("http://t.cn/[a-zA-Z0-9+&@#/%?=~_\\-|!:,\\.;]{5,8}[a-zA-Z0-9+&@#/%=~_|]");
-
-    private static final int VIEW_TYPE_DEFAULT = 1;
-    private static final int VIEW_TYPE_LOADING = 2;
+public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.HomeWeiboViewHolder> implements View.OnClickListener {
 
     private final LayoutInflater mInflater;
-    private final Activity mActivity;
     private final RequestManager mRequestManager;
     private final WeiboContentView.OnPictureListener mOnPictureListener;
 
     private List<Status> mData;
     private boolean mAnimateItems = true;
+    private OnFeedItemClickListener mOnFeedItemClickListener;
 
     /**
      * 最后一个进行动画的item的位置
@@ -55,14 +47,13 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     public HomeWeiboAdapter(Activity activity, RequestManager requestManager, WeiboContentView.OnPictureListener listener) {
         this.mData = new ArrayList<>();
         this.mInflater = LayoutInflater.from(activity);
-        this.mActivity = activity;
         this.mRequestManager = requestManager;
         this.mOnPictureListener = listener;
     }
 
     @Override
     public HomeWeiboViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_LOADING) {
+        if (viewType == Constants.VIEW_TYPE_LOADING) {
             View loadingView = mInflater.inflate(R.layout.layout_recyclerview_footer, parent, false);
             return new HomeWeiboViewHolder(loadingView);
         } else {
@@ -74,6 +65,8 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
             holder.flRetweetedContent.setOnPictureListener(mOnPictureListener);
             holder.flWeiboContent.setOnThumbnailPicListener(mOnThumbnailPicListener);
             holder.flRetweetedContent.setOnThumbnailPicListener(mOnThumbnailPicListener);
+            holder.btnReposts.setOnClickListener(this);
+            holder.btnComments.setOnClickListener(this);
             return holder;
         }
     }
@@ -81,7 +74,9 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     @Override
     public void onBindViewHolder(HomeWeiboViewHolder holder, int position) {
         runEnterAnimation(holder.itemView, position);
-        if (getItemViewType(position) != VIEW_TYPE_LOADING) {
+        if (getItemViewType(position) != Constants.VIEW_TYPE_LOADING) {
+            holder.btnReposts.setTag(position);
+            holder.btnComments.setTag(position);
             Status status = mData.get(position);
             //微博内容
             holder.flWeiboContent.setWeiboContent(status, false);
@@ -141,9 +136,8 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         notifyDataSetChanged();
     }
 
-    public void clear(int lastVisibleItemPosition) {
+    public void clear() {
         mData.clear();
-        mLastAnimatedPosition = lastVisibleItemPosition;
     }
 
     public void addLoading() {
@@ -159,9 +153,9 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
     @Override
     public int getItemViewType(int position) {
         if (position == getItemCount() - 1 && isVisibleLoading) {
-            return VIEW_TYPE_LOADING;
+            return Constants.VIEW_TYPE_LOADING;
         } else {
-            return VIEW_TYPE_DEFAULT;
+            return Constants.VIEW_TYPE_DEFAULT;
         }
     }
 
@@ -179,29 +173,54 @@ public class HomeWeiboAdapter extends RecyclerView.Adapter<HomeWeiboAdapter.Home
         mOnThumbnailPicListener = listener;
     }
 
+    public void setOnFeedItemClickListener(OnFeedItemClickListener listener) {
+        this.mOnFeedItemClickListener = listener;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnReposts:
+                if (mOnFeedItemClickListener != null) {
+                    mOnFeedItemClickListener.onRepostsClick(v, (Integer) v.getTag());
+                }
+                break;
+            case R.id.btnComments:
+                if (mOnFeedItemClickListener != null) {
+                    int i = (int) v.getTag();
+                    mOnFeedItemClickListener.onCommentsClick(v, mData.get((Integer) v.getTag()).idstr);
+                }
+                break;
+        }
+    }
+
     public static class HomeWeiboViewHolder extends RecyclerView.ViewHolder {
-        @Optional
-        @InjectView(R.id.flWeiboContent)
         WeiboContentView flWeiboContent;
-        @Optional
-        @InjectView(R.id.cvRetweetedContent)
-        CardView cvRetweetedContent;
-        @Optional
-        @InjectView(R.id.flRetweetedContent)
         WeiboContentView flRetweetedContent;
-        @Optional
-        @InjectView(R.id.tvAttitudesCount)
+        CardView cvRetweetedContent;
         TextView tvAttitudesCount;
-        @Optional
-        @InjectView(R.id.tvRepostsCount)
         TextView tvRepostsCount;
-        @Optional
-        @InjectView(R.id.tvCommentsCount)
         TextView tvCommentsCount;
+        ImageButton btnReposts;
+        ImageButton btnComments;
 
         public HomeWeiboViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            flWeiboContent = (WeiboContentView) itemView.findViewById(R.id.flWeiboContent);
+            cvRetweetedContent = (CardView) itemView.findViewById(R.id.cvRetweetedContent);
+            flRetweetedContent = (WeiboContentView) itemView.findViewById(R.id.flRetweetedContent);
+            tvAttitudesCount = (TextView) itemView.findViewById(R.id.tvAttitudesCount);
+            tvRepostsCount = (TextView) itemView.findViewById(R.id.tvRepostsCount);
+            tvCommentsCount = (TextView) itemView.findViewById(R.id.tvCommentsCount);
+            btnReposts = (ImageButton) itemView.findViewById(R.id.btnReposts);
+            btnComments = (ImageButton) itemView.findViewById(R.id.btnComments);
         }
+    }
+
+
+    public interface OnFeedItemClickListener {
+        public void onRepostsClick(View view, int position);
+
+        public void onCommentsClick(View view, String weiboId);
     }
 }

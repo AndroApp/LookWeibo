@@ -113,12 +113,12 @@ public class TileBitmapDrawable extends Drawable {
         synchronized (sBitmapCacheLock) {
             if (sBitmapCache == null) {
                 // The Tile can be reduced up to half of its size until the next level of tiles is displayed
-                final int maxHorizontalTiles = (int) Math.ceil(2 * metrics.widthPixels / (float) mTileSize);
-                final int maxVerticalTiles = (int) Math.ceil(2 * metrics.heightPixels / (float) mTileSize);
+                final int maxHorizontalTiles = (int) Math.ceil(metrics.widthPixels / (float) mTileSize);
+                final int maxVerticalTiles = (int) Math.ceil(metrics.heightPixels / (float) mTileSize);
 
                 // The shared cache will have the minimum required size to display all visible tiles
                 // Here, we multiply by 4 because in ARGB_8888 config, each pixel is stored on 4 bytes
-                final int cacheSize = 4 * maxHorizontalTiles * maxVerticalTiles * mTileSize * mTileSize;
+                final int cacheSize = 2 * maxHorizontalTiles * maxVerticalTiles * mTileSize * mTileSize;
 
                 sBitmapCache = new BitmapLruCache(cacheSize);
             }
@@ -372,6 +372,8 @@ public class TileBitmapDrawable extends Drawable {
 
         private final OnInitializeListener mListener;
 
+        private int mScaleHeight;
+
         private InitializationTask(ImageView imageView, Drawable placeHolder, OnInitializeListener listener) {
             mImageView = imageView;
             mListener = listener;
@@ -392,7 +394,6 @@ public class TileBitmapDrawable extends Drawable {
                 if (params[0] instanceof byte[]) {
                     byte[] bytes = (byte[]) params[0];
                     decoder = BitmapRegionDecoder.newInstance(bytes, 0, bytes.length, false);
-
                 } else if (params[0] instanceof String) {
                     decoder = BitmapRegionDecoder.newInstance((String) params[0], false);
                 } else if (params[0] instanceof FileDescriptor) {
@@ -403,27 +404,25 @@ public class TileBitmapDrawable extends Drawable {
             } catch (Exception e) {
                 return e;
             }
-            if (mImageView instanceof TouchImageView) {
-                float scaleSize = Utils.getScreenWidth() / (float) decoder.getWidth();
-                if (scaleSize < 1) {
-                    ((TouchImageView) mImageView).setMaxScale(2.5f);
-                } else {
-                    ((TouchImageView) mImageView).setMaxScale(scaleSize + 1.5f);
-                }
-
-            }
 
             final DisplayMetrics metrics = new DisplayMetrics();
             final WindowManager wm = (WindowManager) mImageView.getContext().getSystemService(Context.WINDOW_SERVICE);
             wm.getDefaultDisplay().getMetrics(metrics);
 
             final float minScale = Math.min(metrics.widthPixels / (float) decoder.getWidth(), metrics.heightPixels / (float) decoder.getHeight());
+
+            if (mImageView instanceof TouchImageView) {
+                float scaleSize = Utils.getScreenWidth() / (float) decoder.getWidth();
+                mScaleHeight = (int) (decoder.getHeight() * scaleSize);
+                ((TouchImageView) mImageView).setMaxScale(scaleSize + 1.5f);
+            }
+
             final int levelCount = Math.max(1, MathUtils.ceilLog2(decoder.getWidth() / (decoder.getWidth() * minScale)));
 
             final Rect screenNailRect = new Rect(0, 0, decoder.getWidth(), decoder.getHeight());
 
             final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Config.ARGB_8888;
+            options.inPreferredConfig = Config.RGB_565;
             options.inPreferQualityOverSpeed = true;
             options.inSampleSize = (1 << (levelCount - 1));
 
@@ -454,8 +453,10 @@ public class TileBitmapDrawable extends Drawable {
             if (result instanceof TileBitmapDrawable) {
                 // Success
                 mImageView.setImageDrawable((TileBitmapDrawable) result);
-               // ((TouchImageView) mImageView).scroll2Top();
 
+                if (mScaleHeight > Utils.getScreenHeight()) {
+                    ((TouchImageView) mImageView).scroll2Top();
+                }
                 if (mListener != null) mListener.onEndInitialization();
             } else if (result instanceof Exception && mListener != null) {
                 // Exception was thrown
@@ -507,7 +508,7 @@ public class TileBitmapDrawable extends Drawable {
                 }
 
                 final BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Config.ARGB_8888;
+                options.inPreferredConfig = Config.RGB_565;
                 options.inPreferQualityOverSpeed = true;
                 options.inSampleSize = (1 << tile.mLevel);
 

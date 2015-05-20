@@ -16,23 +16,23 @@ import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.shine.look.weibo.R;
-import com.shine.look.weibo.bean.HomeInfo;
 import com.shine.look.weibo.bean.ThumbnailPic;
+import com.shine.look.weibo.bean.gson.HomeInfo;
 import com.shine.look.weibo.medel.BaseModel;
 import com.shine.look.weibo.medel.HomeModel;
+import com.shine.look.weibo.ui.activity.BaseActivity;
+import com.shine.look.weibo.ui.activity.CommentsActivity;
 import com.shine.look.weibo.ui.activity.MainActivity;
 import com.shine.look.weibo.ui.activity.ShowPictureActivity;
 import com.shine.look.weibo.ui.adapter.HomeWeiboAdapter;
 import com.shine.look.weibo.ui.adapter.ThumbnailPicAdapter;
-import com.shine.look.weibo.ui.transition.ActivityTransitionLauncher;
+import com.shine.look.weibo.ui.utils.AnimationUtils;
+import com.shine.look.weibo.ui.utils.transition.ActivityTransitionLauncher;
 import com.shine.look.weibo.ui.views.LoadMoreRecyclerView;
 import com.shine.look.weibo.ui.views.WeiboContentView;
 import com.shine.look.weibo.utils.Utils;
 
 import java.util.ArrayList;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * User:Shine
@@ -41,7 +41,8 @@ import butterknife.InjectView;
  */
 public class HomeFragment extends BaseFragment implements BaseModel.OnRequestListener<HomeInfo>
         , SwipeRefreshLayout.OnRefreshListener, LoadMoreRecyclerView.OnRefreshEndListener
-        , WeiboContentView.OnPictureListener, ThumbnailPicAdapter.OnThumbnailPicListener {
+        , WeiboContentView.OnPictureListener, ThumbnailPicAdapter.OnThumbnailPicListener, View.OnClickListener
+        , HomeWeiboAdapter.OnFeedItemClickListener{
 
     public static final String ARG_PICTURE_URL = "com.shine.look.weibo.picUrl";
     public static final String ARG_PICTURE_POSITION = "com.shine.look.weibo.picPosition";
@@ -54,10 +55,8 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
     private int mLastVisiblePosition;
 
 
-    @InjectView(R.id.rvHome)
-    LoadMoreRecyclerView mRvHome;
-    @InjectView(R.id.swipe_container)
-    SwipeRefreshLayout mSwipeContainer;
+    private LoadMoreRecyclerView mRvHome;
+    private SwipeRefreshLayout mSwipeContainer;
 
 
     @Nullable
@@ -69,7 +68,8 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        mRvHome = (LoadMoreRecyclerView) view.findViewById(R.id.rvHome);
+        mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         init();
     }
 
@@ -78,10 +78,11 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
         mSwipeContainer.setOnRefreshListener(this);
         mSwipeContainer.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
 
-        RequestManager requestManager = Glide.with(this);
+        RequestManager requestManager = Glide.with(getActivity().getApplicationContext());
         mAdapter = new HomeWeiboAdapter(getActivity(), requestManager, this);
         mAdapter.setOnThumbnailPicListener(this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mAdapter.setOnFeedItemClickListener(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRvHome.setLayoutManager(linearLayoutManager);
         mRvHome.setAdapter(mAdapter);
         mRvHome.setOnRefreshEndListener(this);
@@ -90,29 +91,40 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
         mModel.setOnRequestListener(this);
         mModel.request();
 
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setInboxMenuItemOnClick(this);
+        }
+
     }
+
 
     @Override
     public void onSuccess(final HomeInfo info) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                closeRefresh();
-                if (info.total_number > 0 && info.statuses.size() > 0) {
-                    if (mModel.getMaxId() == 0 && mAdapter.getItemCount() > 0) {
-                        mAdapter.clear(mLastVisiblePosition);
-                    }
-                    mAdapter.addItems(info.statuses);
-                } else if (info.total_number >= mAdapter.getItemCount()) {
-                    //ToastHelper.show(getString(R.string.sina_limit_only_load), R.drawable.d_xiaoku);
-                }
+        if (info.total_number > 0 && info.statuses.size() > 0) {
+            closeRefresh(0);
+            if (mModel.getMaxId() == 0 && mAdapter.getItemCount() > 0) {
+                mAdapter.clear();
             }
-        }, 500);
+            mAdapter.addItems(info.statuses);
+        } else {
+            closeRefresh(500);
+        }
+//        else if (info.total_number >= mAdapter.getItemCount()) {
+//            //ToastHelper.show(getString(R.string.sina_limit_only_load), R.drawable.d_xiaoku);
+//        }
     }
 
-    private void closeRefresh() {
+    private void closeRefresh(int delay) {
         if (mRvHome.isLoading()) {
-            mRvHome.setCloseLoading();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mRvHome != null && mAdapter != null) {
+                        mRvHome.setCloseLoading();
+                        mAdapter.removeLoading();
+                    }
+                }
+            }, delay);
         }
         if (mSwipeContainer.isRefreshing()) {
             mSwipeContainer.setRefreshing(false);
@@ -120,14 +132,22 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnInbox:
+                AnimationUtils.moveRecyclerViewToTop(mRvHome);
+                break;
+        }
+    }
+
+    @Override
     public void onFailure(VolleyError error) {
-        closeRefresh();
+        closeRefresh(500);
     }
 
     @Override
     public void onRefresh() {
         if (mModel != null) {
-            mLastVisiblePosition = ((LinearLayoutManager) mRvHome.getLayoutManager()).findLastVisibleItemPosition();
             mModel.setMaxId(0);
             mModel.request();
         }
@@ -137,6 +157,7 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
     @Override
     public void onEnd() {
         if (mModel != null) {
+            mAdapter.addLoading();
             mModel.setMaxId(mAdapter.getMaxId() - 1);
             mModel.request();
         }
@@ -150,7 +171,6 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
         final Intent intent = new Intent(getActivity(), ShowPictureActivity.class);
         intent.putExtra(ARG_PICTURE_URL, picUrl);
         ActivityTransitionLauncher.with(getActivity()).from(imageView).image(Utils.drawableToBitmap(drawable)).launch(intent);
-        ((MainActivity) getActivity()).setTaskTop(true);
     }
 
     @Override
@@ -164,7 +184,20 @@ public class HomeFragment extends BaseFragment implements BaseModel.OnRequestLis
             startActivity(intent);
         } else {
             ActivityTransitionLauncher.with(getActivity()).from(imageView).image(Utils.drawableToBitmap(drawable)).launch(intent);
-            ((MainActivity) getActivity()).setTaskTop(true);
         }
     }
+
+    @Override
+    public void onCommentsClick(View view, String weiboId) {
+        int[] screenLocation = new int[2];
+        view.getLocationOnScreen(screenLocation);
+        CommentsActivity.start(getActivity(), screenLocation[1], weiboId, ((BaseActivity) getActivity()).toolBarIsMenu(), ((BaseActivity) getActivity()).toolBarMenuResId());
+
+    }
+
+    @Override
+    public void onRepostsClick(View view, int position) {
+
+    }
+
 }

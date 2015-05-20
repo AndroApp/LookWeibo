@@ -2,7 +2,7 @@ package com.shine.look.weibo.medel;
 
 import android.app.Activity;
 
-import com.shine.look.weibo.bean.HomeInfo;
+import com.shine.look.weibo.bean.gson.HomeInfo;
 import com.shine.look.weibo.http.RequestParams;
 import com.shine.look.weibo.utils.Constants;
 

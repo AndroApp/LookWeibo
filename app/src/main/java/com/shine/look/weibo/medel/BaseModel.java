@@ -6,13 +6,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
-import com.shine.look.weibo.bean.ErrorInfo;
+import com.shine.look.weibo.bean.gson.ErrorInfo;
+import com.shine.look.weibo.http.GsonRequest;
 import com.shine.look.weibo.http.HttpError;
 import com.shine.look.weibo.http.RequestManager;
 import com.shine.look.weibo.utils.AccessTokenKeeper;
 import com.shine.look.weibo.utils.FileHelper;
 import com.shine.look.weibo.utils.LogHelper;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+
+import java.util.Map;
 
 /**
  * User:Shine
@@ -84,6 +87,26 @@ public abstract class BaseModel {
                 }
             }
         });
+        RequestManager.addRequest(request, mActivity);
+    }
+
+    protected void executeRequest(Map<String, String> params, final Class clazz) {
+        GsonRequest request = new GsonRequest(getUrl(), clazz, params, new Response.Listener() {
+            @Override
+            public void onResponse(Object o) {
+                if (onRequestListener != null) {
+                    onRequestListener.onSuccess(o);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (onRequestListener != null) {
+                    onRequestListener.onFailure(volleyError);
+                }
+            }
+        });
+
         RequestManager.addRequest(request, mActivity);
     }
 

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,14 +21,12 @@ import android.widget.ProgressBar;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.ui.utils.AnimationUtils;
 import com.shine.look.weibo.ui.utils.BrowserContextMenuManager;
-import com.shine.look.weibo.ui.utils.WeiboTextUrlSpan;
+import com.shine.look.weibo.ui.utils.WeiboUrlSpan;
 import com.shine.look.weibo.ui.views.BrowserContextMenu;
 import com.shine.look.weibo.ui.views.ContentTextView;
+import com.shine.look.weibo.utils.Constants;
 
 import java.util.regex.Matcher;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * User:Shine
@@ -40,25 +37,30 @@ public class BrowserActivity extends BaseActivity implements View.OnClickListene
 
     private WebView mWvBrowser;
 
-    @InjectView(R.id.flBrowser)
-    FrameLayout mFlBrowser;
-    @InjectView(R.id.pbBrowser)
-    ProgressBar mPbBrowser;
+    private FrameLayout mFlBrowser;
+    private ProgressBar mPbBrowser;
+
+    private boolean mBackIsMenu;
+    private int mBackMenuResId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
-        ButterKnife.inject(this);
+        mFlBrowser = (FrameLayout) findViewById(R.id.flBrowser);
+        mPbBrowser = (ProgressBar) findViewById(R.id.pbBrowser);
         initializeToolbar();
         init(savedInstanceState);
     }
 
     private void init(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
+        Intent intent = getIntent();
+        if (savedInstanceState == null && intent != null) {
             mWvBrowser = new WebView(getApplicationContext());
             mFlBrowser.addView(mWvBrowser);
-            final int drawingStartLocation = getIntent().getIntExtra(WeiboTextUrlSpan.START_LOCATION, 0);
+            final int drawingStartLocation = intent.getIntExtra(WeiboUrlSpan.START_LOCATION, 0);
+            mBackIsMenu = intent.getBooleanExtra(Constants.ARG_TOOLBAR_IS_MENU, true);
+            mBackMenuResId = intent.getIntExtra(Constants.ARG_TOOLBAR_MENU_RES_ID, 0);
             mFlBrowser.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
@@ -69,6 +71,8 @@ public class BrowserActivity extends BaseActivity implements View.OnClickListene
             });
         }
         WebSettings webSettings = mWvBrowser.getSettings();
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
         webSettings.setJavaScriptEnabled(true);
         mWvBrowser.setWebViewClient(new WebViewClient() {
             @Override
@@ -98,7 +102,7 @@ public class BrowserActivity extends BaseActivity implements View.OnClickListene
             }
         });
 
-        Uri uri = getIntent().getData();
+        Uri uri = intent.getData();
         if (uri != null) {
             Matcher matcher = ContentTextView.HTTP_URL.matcher(uri.toString());
             if (matcher.find()) {
@@ -109,38 +113,55 @@ public class BrowserActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
+    public boolean toolBarIsMenu() {
+        return false;
+    }
+
+    @Override
+    public int toolBarMenuResId() {
+        return R.drawable.ic_action_more;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        //将菜单图标变为箭头图标
-        AnimationUtils.menuToArrowAnimator(getDrawerToggle(), getDrawerLayout());
+        if (mBackIsMenu) {
+            //将菜单图标变为箭头图标
+            AnimationUtils.menuToArrowAnimator(getDrawerToggle(), getDrawerLayout());
+        } else {
+            getDrawerToggle().onDrawerOpened(getDrawerLayout());
+        }
         //覆盖箭头图标的点击事件
         getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AnimationUtils.closeEnterDownAnimation(mFlBrowser, getToolbar(), BrowserActivity.this);
+                closeEnterAnimation();
             }
         });
         setInboxMenuItemOnClick(this);
-        //右边图标改为more图标
-        final ImageButton btn = (ImageButton) getInboxMenuItem().getActionView();
-        btn.setScaleY(0);
-        btn.setScaleX(0);
-        btn.setImageResource(R.drawable.ic_action_more);
-        AnimationUtils.scaleToOriginalAnimator(btn);
+
         return true;
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mWvBrowser.canGoBack()) {
-                mWvBrowser.goBack();
-            } else {
-                AnimationUtils.closeEnterDownAnimation(mFlBrowser, getToolbar(), this);
-            }
-            return true;
+    public void onBackPressed() {
+        if (mWvBrowser.canGoBack()) {
+            mWvBrowser.goBack();
+        } else {
+            closeEnterAnimation();
         }
-        return super.onKeyDown(keyCode, event);
+    }
+
+    private void closeEnterAnimation() {
+        final ImageButton btn = (ImageButton) getInboxMenuItem().getActionView();
+        btn.setScaleY(0);
+        btn.setScaleX(0);
+        btn.setImageResource(mBackMenuResId);
+        AnimationUtils.scaleToOriginalAnimator(btn);
+        if (mBackIsMenu) {
+            AnimationUtils.arrowToMenuAnimator(getDrawerToggle(), getDrawerLayout());
+        }
+        AnimationUtils.closeEnterDownAnimation(mFlBrowser, getToolbar(), this);
     }
 
     @Override

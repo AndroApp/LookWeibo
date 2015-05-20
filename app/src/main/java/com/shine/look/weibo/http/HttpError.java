@@ -1,7 +1,7 @@
 package com.shine.look.weibo.http;
 
 import com.shine.look.weibo.R;
-import com.shine.look.weibo.bean.ErrorInfo;
+import com.shine.look.weibo.bean.gson.ErrorInfo;
 
 import java.util.HashMap;
 import java.util.Map;

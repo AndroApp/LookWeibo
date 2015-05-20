@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="huangruimin_huati"/>
+            android:text="本应用暂无权限"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -7,17 +7,15 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
-import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.shine.look.weibo.R;
-import com.shine.look.weibo.ui.utils.WeiboTextUrlSpan;
+import com.shine.look.weibo.ui.utils.WeiboUrlSpan;
 import com.shine.look.weibo.utils.ExpressionMap;
 
 import java.util.Locale;
@@ -61,14 +59,6 @@ public class ContentTextView extends TextView {
      */
     private boolean isPressed;
 
-
-    private final UnderlineSpan mUnderlineSpan = new UnderlineSpan() {
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            ds.setUnderlineText(false);
-        }
-    };
-
     public ContentTextView(Context context) {
         super(context);
         init();
@@ -109,8 +99,6 @@ public class ContentTextView extends TextView {
         addLinks(spannable, HTTP_URL, HTTP_SCHEME);
 
         ExpressionMap.addExpression(spannable);
-        //取消下划线
-        spannable.setSpan(mUnderlineSpan, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setText(spannable);
     }
 
@@ -124,8 +112,7 @@ public class ContentTextView extends TextView {
             end = matcher.end();
 
             String url = makeUrl(matcher.group(0), new String[]{prefix});
-
-            WeiboTextUrlSpan span = new WeiboTextUrlSpan(url);
+            WeiboUrlSpan span = new WeiboUrlSpan(url);
             spannable.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 

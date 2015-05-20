@@ -1,4 +1,6 @@
-package com.shine.look.weibo.bean;
+package com.shine.look.weibo.bean.gson;
+
+import com.shine.look.weibo.bean.Status;
 
 import java.util.List;
 

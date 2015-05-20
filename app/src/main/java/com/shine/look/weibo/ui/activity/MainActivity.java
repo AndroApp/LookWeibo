@@ -3,14 +3,14 @@ package com.shine.look.weibo.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.MemoryCategory;
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.ui.fragment.HomeFragment;
-import com.shine.look.weibo.ui.utils.AnimationUtils;
 import com.shine.look.weibo.utils.Utils;
 
 /**
@@ -33,13 +33,20 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         initializeToolbar();
-
         if (savedInstanceState == null) {
             mPendingIntroAnimation = true;
         }
-
     }
 
+    @Override
+    public boolean toolBarIsMenu() {
+        return true;
+    }
+
+    @Override
+    public int toolBarMenuResId() {
+        return R.drawable.ic_action_publish;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,11 +85,27 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        switch (level) {
+            case TRIM_MEMORY_UI_HIDDEN:
+                break;
+            case TRIM_MEMORY_RUNNING_MODERATE:
+                Glide.get(this).setMemoryCategory(MemoryCategory.HIGH);
+                break;
+            case TRIM_MEMORY_RUNNING_LOW:
+                break;
+        }
+    }
+
     public static void start(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);
     }
 
+
+/*
     @Override
     protected void onPause() {
         super.onPause();
@@ -111,6 +134,6 @@ public class MainActivity extends BaseActivity {
             AnimationUtils.arrowToMenuAnimator(getDrawerToggle(), getDrawerLayout());
             AnimationUtils.scaleToOriginalAnimator(getInboxMenuItem().getActionView());
         }
-    }
+    }*/
 
 }

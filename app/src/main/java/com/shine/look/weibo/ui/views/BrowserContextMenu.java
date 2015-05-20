@@ -2,21 +2,20 @@ package com.shine.look.weibo.ui.views;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.shine.look.weibo.R;
 import com.shine.look.weibo.utils.Utils;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * User:Shine
  * Date:2015-05-14
  * Description:
  */
-public class BrowserContextMenu extends LinearLayout {
+public class BrowserContextMenu extends LinearLayout implements View.OnClickListener {
 
     private static final int CONTEXT_MENU_WIDTH = Utils.dpToPx(200);
 
@@ -39,7 +38,9 @@ public class BrowserContextMenu extends LinearLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        ButterKnife.inject(this);
+        findViewById(R.id.btnRefresh).setOnClickListener(this);
+        findViewById(R.id.btnCopy).setOnClickListener(this);
+        findViewById(R.id.btnBrowserOpen).setOnClickListener(this);
     }
 
     public void bindToItem(int feedItem) {
@@ -50,17 +51,25 @@ public class BrowserContextMenu extends LinearLayout {
         ((ViewGroup) getParent()).removeView(BrowserContextMenu.this);
     }
 
-    @OnClick(R.id.btnRefresh)
-    public void onRefreshClick() {
-        if (onItemClickListener != null) {
-            onItemClickListener.onRefreshClick(feedItem);
-        }
-    }
 
-    @OnClick(R.id.btnCopy)
-    public void onCopyClick() {
-        if (onItemClickListener != null) {
-            onItemClickListener.onCopyClick(feedItem);
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnRefresh:
+                if (onItemClickListener != null) {
+                    onItemClickListener.onRefreshClick(feedItem);
+                }
+                break;
+            case R.id.btnCopy:
+                if (onItemClickListener != null) {
+                    onItemClickListener.onCopyClick(feedItem);
+                }
+                break;
+            case R.id.btnBrowserOpen:
+                if (onItemClickListener != null) {
+                    onItemClickListener.onBrowserOpenClick(feedItem);
+                }
+                break;
         }
     }
 /*  分享功能 暂时不做
@@ -70,13 +79,6 @@ public class BrowserContextMenu extends LinearLayout {
             onItemClickListener.onShareClick(feedItem);
         }
     }*/
-
-    @OnClick(R.id.btnBrowserOpen)
-    public void onBrowserOpenClick() {
-        if (onItemClickListener != null) {
-            onItemClickListener.onBrowserOpenClick(feedItem);
-        }
-    }
 
     public void setOnBrowserMenuItemClickListener(OnBrowserContextMenuItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;

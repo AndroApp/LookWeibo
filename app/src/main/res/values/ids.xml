@@ -6,6 +6,9 @@
     <item name="tvSource" type="id"/>
     <item name="tvText" type="id"/>
     <item name="swipe_container" type="id"/>
+    <item name="vRevealBackground" type="id"/>
+    <item name="edWriteComment" type="id"/>
+    <item name="tvWriteMaxLength" type="id"/>
     <item name="drawerLayout" type="id"/>
     <item name="rvHome" type="id"/>
     <item name="ivLargePic" type="id"/>
@@ -49,4 +52,7 @@
     <item name="llShowPictureBg" type="id"/>
     <item name="ivMore" type="id"/>
     <item name="tvCurrentPage" type="id"/>
+    <item name="rvComments" type="id"/>
+    <item name="ivUserAvatar" type="id"/>
+    <item name="tvComment" type="id"/>
 </resources>

@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -123,7 +125,7 @@ public class AnimationUtils {
         if (view != null && toolbar != null && activity != null) {
             ViewCompat.setElevation(toolbar, 0);
             view.animate().translationY(Utils.getScreenHeight())
-                    .setDuration(200).setListener(new AnimatorListenerAdapter() {
+                    .setDuration(300).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     activity.finish();
@@ -131,4 +133,24 @@ public class AnimationUtils {
             }).start();
         }
     }
+
+    /**
+     * 移动RecyclerView的Y轴到顶部
+     */
+    public static void moveRecyclerViewToTop(final RecyclerView view) {
+        if (view != null) {
+            int firstVisibleItemPosition = ((LinearLayoutManager) view.getLayoutManager()).findFirstVisibleItemPosition();
+            ValueAnimator animator = ValueAnimator.ofInt(firstVisibleItemPosition, 0);
+            animator.setDuration(10 * firstVisibleItemPosition);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    int currentValue = (int) animation.getAnimatedValue();
+                    view.scrollToPosition(currentValue);
+                }
+            });
+            animator.start();
+        }
+    }
+
 }

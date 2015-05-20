@@ -57,6 +57,7 @@
         android:textSize="16sp"
         tools:text="texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext"/>
 
+
     <android.support.v7.widget.RecyclerView
         android:id="@id/rvThumbnailPic"
         android:layout_width="match_parent"
@@ -65,6 +66,13 @@
         android:layout_marginTop="8dp"
         android:scrollbars="none"
         android:visibility="gone"/>
+    <!-- <include
+         layout="@layout/layout_thumbnail_pics"
+         android:visibility="gone"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_below="@id/tvText"
+         android:layout_marginTop="8dp"/>-->
 
     <ImageView
         android:id="@id/ivLargePic"

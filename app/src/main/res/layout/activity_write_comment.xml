@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.shine.look.weibo.ui.views.RevealBackgroundView
+        android:id="@id/vRevealBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/layout_toolbar"/>
+
+    <EditText
+        android:id="@id/edWriteComment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:layout_margin="16dp"
+        android:background="@null"
+        android:gravity="top|left"
+        android:hint="@string/write_edit_hint"
+        android:maxLength="140"
+        android:paddingBottom="16dp"
+        android:scrollbars="vertical"
+        android:textColor="@color/primary_text"
+        android:textColorHint="@color/secondary_text"
+        android:textSize="16sp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@id/tvWriteMaxLength"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/edWriteComment"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:textColor="@color/secondary_text"
+        tools:text="1/140"/>
+
+
+</RelativeLayout>

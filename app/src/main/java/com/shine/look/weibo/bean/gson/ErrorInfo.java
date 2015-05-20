@@ -1,4 +1,4 @@
-package com.shine.look.weibo.bean;
+package com.shine.look.weibo.bean.gson;
 
 /**
  * User:Shine

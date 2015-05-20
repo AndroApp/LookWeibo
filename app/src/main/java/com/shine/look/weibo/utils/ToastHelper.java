@@ -31,39 +31,7 @@ public class ToastHelper {
     }
 
 
-    private static void show(Context context, CharSequence text, int gravity) {
-        View toastView = LayoutInflater.from(context).inflate(R.layout.layout_toast, null);
-        TextView messageText = (TextView) toastView.findViewById(R.id.toast_message);
-        messageText.setText(text);
-        Toast toast = new Toast(context);
-        toast.setView(toastView);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        if (gravity > 0)
-            toast.setGravity(gravity, 0, 0);
-        toast.show();
-    }
-
-    public static void show(int textId, int resId) {
-        Context context = WeiboApplication.getContext();
-        show(context, context.getString(textId), resId, 0);
-    }
-
-    public static void show(String str, int resId) {
-        Context context = WeiboApplication.getContext();
-        show(context, str, resId, 0);
-    }
-
-    public static void show(int textId, int resId, int gravity) {
-        Context context = WeiboApplication.getContext();
-        show(context, context.getString(textId), resId, gravity);
-    }
-
-    public static void show(String str, int resId, int gravity) {
-        Context context = WeiboApplication.getContext();
-        show(context, str, resId, gravity);
-    }
-
-    private static void show(Context context, String str, int resId, int gravity) {
+    private static void show(Context context, String str, int gravity) {
         View toastView = LayoutInflater.from(context).inflate(R.layout.layout_toast_image, null);
         TextView messageText = (TextView) toastView.findViewById(R.id.toast_message);
         messageText.setText(str);

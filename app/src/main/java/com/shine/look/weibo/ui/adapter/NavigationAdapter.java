@@ -13,9 +13,6 @@ import com.shine.look.weibo.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
 /**
  * User:Shine
  * Date:2015-05-11
@@ -36,14 +33,14 @@ public class NavigationAdapter extends ArrayAdapter<NavigationAdapter.Navigation
     }
 
     private void setupMenuItems() {
-        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_home, "首页"));
-        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_supervisor_account, "好友"));
-        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_room, "周边"));
-        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_grade, "收藏"));
-        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_email, "私信"));
-        mMenuItems.add(NavigationMenuItem.dividerMenuItem());
-        mMenuItems.add(new NavigationMenuItem(0, "设置"));
-        mMenuItems.add(new NavigationMenuItem(0, "关于"));
+        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_home, getContext().getString(R.string.home)));
+//        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_supervisor_account, "好友"));
+//        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_room, "周边"));
+//        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_grade, "收藏"));
+//        mMenuItems.add(new NavigationMenuItem(R.drawable.ic_action_email, "私信"));
+//        mMenuItems.add(NavigationMenuItem.dividerMenuItem());
+//        mMenuItems.add(new NavigationMenuItem(0, "设置"));
+//        mMenuItems.add(new NavigationMenuItem(0, "关于"));
         notifyDataSetChanged();
     }
 
@@ -95,13 +92,12 @@ public class NavigationAdapter extends ArrayAdapter<NavigationAdapter.Navigation
 
     public static class MenuItemViewHolder {
 
-        @InjectView(R.id.ivIcon)
         ImageView ivIcon;
-        @InjectView(R.id.tvLabel)
         TextView tvLabel;
 
         public MenuItemViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ivIcon = (ImageView) view.findViewById(R.id.ivIcon);
+            tvLabel = (TextView) view.findViewById(R.id.tvLabel);
         }
 
     }

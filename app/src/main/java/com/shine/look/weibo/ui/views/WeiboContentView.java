@@ -27,8 +27,6 @@ import com.shine.look.weibo.ui.utils.ScaledTransformation;
 import com.shine.look.weibo.utils.Constants;
 import com.shine.look.weibo.utils.Utils;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * User:Shine
@@ -50,20 +48,13 @@ public class WeiboContentView extends RelativeLayout {
 
     private OnPictureListener mOnPictureListener;
 
-    @InjectView(R.id.tvText)
-    ContentTextView mTvText;//文字内容
-    @InjectView(R.id.rvThumbnailPic)
-    RecyclerView mRvThumbnailPic;//缩略图
-    @InjectView(R.id.ivLargePic)
-    ImageView mIvLargePic;//一张是显示的大图
-    @InjectView(R.id.ivUserProfile)
-    ImageView mIvUserProfile;//用户头像
-    @InjectView(R.id.tvUserName)
-    TextView mTvUserName;//用户名
-    @InjectView(R.id.tvCreatedTime)
-    DateTextView mTvCreatedTime;//发表时间
-    @InjectView(R.id.tvSource)
-    TextView mTvSource;//来源
+    private ContentTextView mTvText;//文字内容
+    private RecyclerView mRvThumbnailPic;//缩略图
+    private ImageView mIvLargePic;//一张是显示的大图
+    private ImageView mIvUserProfile;//用户头像
+    private TextView mTvUserName;//用户名
+    private DateTextView mTvCreatedTime;//发表时间
+    private TextView mTvSource;//来源
 
 
     public WeiboContentView(Context context) {
@@ -89,7 +80,15 @@ public class WeiboContentView extends RelativeLayout {
 
     private void init() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_weibo_content, this);
-        ButterKnife.inject(this, view);
+
+        mTvText = (ContentTextView) view.findViewById(R.id.tvText);
+        mRvThumbnailPic = (RecyclerView) view.findViewById(R.id.rvThumbnailPic);
+        mIvLargePic = (ImageView) view.findViewById(R.id.ivLargePic);
+        mIvUserProfile = (ImageView) view.findViewById(R.id.ivUserProfile);
+        mTvUserName = (TextView) view.findViewById(R.id.tvUserName);
+        mTvCreatedTime = (DateTextView) view.findViewById(R.id.tvCreatedTime);
+        mTvSource = (TextView) view.findViewById(R.id.tvSource);
+
         mRvThumbnailPic.setLayoutManager(new ThumbnailPicLayoutManager(getContext(), COLUMN_COUNT));
         mRvThumbnailPic.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -153,7 +152,7 @@ public class WeiboContentView extends RelativeLayout {
                 mIvLargePic.setVisibility(View.VISIBLE);
                 mRvThumbnailPic.setVisibility(View.GONE);
                 // mPicUrl = "http://ww1.sinaimg.cn/large/7fd54a81tw1erwr8ox7x9j20cs4817uy.jpg";
-                mPicUrl = status.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_LARGE_PATH);
+                mPicUrl = status.pic_urls.get(0).thumbnail_pic.replace(Constants.URL_THUMBNAIL_PATH, Constants.URL_BMIDDLE_PATH);
                 mTransformation.setBitmapWidth(isRetweeted ? RETWEETED_PIC_WIDTH : ROOT_PIC_WIDTH);
                 mTransformation.setGifLabel(mPicUrl.indexOf(".gif") != -1);
                 mGlide.load(mPicUrl)

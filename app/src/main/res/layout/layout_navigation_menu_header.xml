@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/btn_context_menu"
     android:clickable="true">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@id/ivUserProfilePhoto"
         android:layout_width="@dimen/navigation_menu_avatar_size"
         android:layout_height="@dimen/navigation_menu_avatar_size"
-        android:layout_margin="12dp"/>
+        android:layout_margin="12dp"
+        app:border_color="@color/white"
+        app:border_width="2dp"/>
 
     <TextView
         android:id="@id/tvUserName"
@@ -34,7 +37,8 @@
         android:layout_centerVertical="true"
         android:layout_margin="16dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_search"/>
+        android:src="@drawable/ic_action_search"
+        android:visibility="invisible"/>
 
     <View
         android:layout_width="match_parent"

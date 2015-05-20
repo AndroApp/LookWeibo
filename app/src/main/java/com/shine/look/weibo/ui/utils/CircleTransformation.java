@@ -20,18 +20,18 @@ public class CircleTransformation extends BitmapTransformation {
     }
 
     @Override
-    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-        int size = Math.min(toTransform.getWidth(), toTransform.getHeight());
+    protected Bitmap transform(BitmapPool pool, Bitmap source, int outWidth, int outHeight) {
+        int size = Math.min(source.getWidth(), source.getHeight());
 
-        int x = (toTransform.getWidth() - size) / 2;
-        int y = (toTransform.getHeight() - size) / 2;
+        int x = (source.getWidth() - size) / 2;
+        int y = (source.getHeight() - size) / 2;
 
-        Bitmap squaredBitmap = Bitmap.createBitmap(toTransform, x, y, size, size);
-        if (squaredBitmap != toTransform) {
-            toTransform.recycle();
+        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+        if (squaredBitmap != source) {
+            source.recycle();
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(size, size, toTransform.getConfig());
+        Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
 
         Canvas canvas = new Canvas(bitmap);
 

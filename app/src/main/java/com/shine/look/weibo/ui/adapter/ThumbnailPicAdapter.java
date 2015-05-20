@@ -18,9 +18,6 @@ import com.shine.look.weibo.utils.Utils;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
 /**
  * User:Shine
  * Date:2015-05-10
@@ -77,7 +74,7 @@ public class ThumbnailPicAdapter extends RecyclerView.Adapter<ThumbnailPicAdapte
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.ivThumbnailPic:
                 if (mListener != null) {
                     mListener.onThumbnailPicClick(v, (Integer) v.getTag(), mData);
@@ -90,12 +87,11 @@ public class ThumbnailPicAdapter extends RecyclerView.Adapter<ThumbnailPicAdapte
 
     public static class ThumbnailViewHolder extends RecyclerView.ViewHolder {
 
-        @InjectView(R.id.ivThumbnailPic)
         ImageView ivThumbnailPic;
 
         public ThumbnailViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ivThumbnailPic = (ImageView) itemView.findViewById(R.id.ivThumbnailPic);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.shine.look.weibo.ui.transition;
+package com.shine.look.weibo.ui.utils.transition;
 
 import android.content.Context;
 

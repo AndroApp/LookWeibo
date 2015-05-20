@@ -6,11 +6,12 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- 在SDCard中创建与删除文件权限 -->
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <!-- 往SDCard写入数据权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <!--android:screenOrientation="portrait"-->
     <application
         android:name=".WeiboApplication"
@@ -18,9 +19,17 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <meta-data
             android:name="com.shine.look.weibo.ui.utils.GlideConfiguration"
             android:value="GlideModule"/>
+
+        <receiver android:name=".ui.utils.SendMsgBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.shine.look.weibo.sendmsg"/>
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".ui.activity.WBAuthActivity"
             android:label="@string/app_name"
@@ -53,7 +62,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.AtActivity"
+            android:name=".ui.activity.UserActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.TransparentActivity">
             <intent-filter>
@@ -75,11 +84,19 @@
         </activity>
         <activity
             android:name=".ui.activity.ShowPictureActivity"
-            android:theme="@style/AppTheme.TransparentActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"/>
-
-
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"/>
+        <activity
+            android:name=".ui.activity.CommentsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"/>
+        <activity
+            android:name=".ui.activity.WriteCommentActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

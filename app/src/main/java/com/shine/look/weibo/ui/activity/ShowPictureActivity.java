@@ -16,14 +16,11 @@ import com.shine.look.weibo.bean.ThumbnailPic;
 import com.shine.look.weibo.ui.adapter.GalleryLargeTouchPicAdapter;
 import com.shine.look.weibo.ui.fragment.GalleryLargeTouchPicFragment;
 import com.shine.look.weibo.ui.fragment.HomeFragment;
-import com.shine.look.weibo.ui.transition.ActivityTransition;
-import com.shine.look.weibo.ui.transition.ExitActivityTransition;
+import com.shine.look.weibo.ui.utils.transition.ActivityTransition;
+import com.shine.look.weibo.ui.utils.transition.ExitActivityTransition;
 import com.shine.look.weibo.ui.views.byakugallery.GalleryViewPager;
 
 import java.util.ArrayList;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * User:Shine
@@ -37,18 +34,12 @@ public class ShowPictureActivity extends AppCompatActivity implements View.OnCli
     private boolean isBackPressed;
     private GalleryLargeTouchPicAdapter mAdapter;
 
-    @InjectView(R.id.ivShowPicture)
-    ImageView ivShowPicture;
-    @InjectView(R.id.llShowPictureBg)
-    View llShowPictureBg;
-    @InjectView(R.id.ivMore)
-    ImageButton ivMore;
-    @InjectView(R.id.svShowPicture)
-    ScrollView svShowPicture;
-    @InjectView(R.id.gvpLargeTouchPics)
-    GalleryViewPager gvpLargeTouchPics;
-    @InjectView(R.id.tvCurrentPage)
-    TextView tvCurrentPage;
+    private ImageView ivShowPicture;
+    private View llShowPictureBg;
+    private ImageButton ivMore;
+    private ScrollView svShowPicture;
+    private GalleryViewPager gvpLargeTouchPics;
+    private TextView tvCurrentPage;
 
     private AnimatorListenerAdapter mAnimatorListenerAdapter = new AnimatorListenerAdapter() {
         @Override
@@ -61,7 +52,13 @@ public class ShowPictureActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_picture);
-        ButterKnife.inject(this);
+
+        ivShowPicture = (ImageView) findViewById(R.id.ivShowPicture);
+        llShowPictureBg = findViewById(R.id.llShowPictureBg);
+        ivMore = (ImageButton) findViewById(R.id.ivMore);
+        svShowPicture = (ScrollView) findViewById(R.id.svShowPicture);
+        gvpLargeTouchPics = (GalleryViewPager) findViewById(R.id.gvpLargeTouchPics);
+        tvCurrentPage = (TextView) findViewById(R.id.tvCurrentPage);
 
         if (getIntent() != null) {
             mData = getIntent().getParcelableArrayListExtra(HomeFragment.ARG_PICTURE_LIST_URL);

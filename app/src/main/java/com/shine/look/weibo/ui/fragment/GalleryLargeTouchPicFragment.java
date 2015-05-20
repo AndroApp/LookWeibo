@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -16,12 +15,9 @@ import com.shine.look.weibo.ui.views.byakugallery.TileBitmapDrawable;
 import com.shine.look.weibo.ui.views.byakugallery.TouchImageView;
 import com.shine.look.weibo.utils.Constants;
 
-import java.io.IOException;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
+
 
 /**
  * User:Shine
@@ -32,12 +28,9 @@ public class GalleryLargeTouchPicFragment extends BaseFragment implements View.O
 
     private static final String ARG_PIC_URL = "com.shine.look.weibo.thumbnailPicUrl";
 
-    @InjectView(R.id.gallery_item_image)
-    TouchImageView mGalleryImage;
-    @InjectView(R.id.gallery_item_gif_image)
-    GifImageView mGalleryGifImage;
-    @InjectView(R.id.gallery_item_progress)
-    ProgressBar mGalleryProgress;
+    private TouchImageView mGalleryImage;
+    private GifImageView mGalleryGifImage;
+    private View mGalleryProgress;
 
     private ThumbnailPic mThumbnailPic;
 
@@ -67,7 +60,10 @@ public class GalleryLargeTouchPicFragment extends BaseFragment implements View.O
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        mGalleryImage = (TouchImageView) view.findViewById(R.id.gallery_item_image);
+        mGalleryGifImage = (GifImageView) view.findViewById(R.id.gallery_item_gif_image);
+        mGalleryProgress = view.findViewById(R.id.gallery_item_progress);
+
         mGalleryGifImage.setOnClickListener(this);
         mGalleryImage.setOnClickListener(this);
         loadPicture();
@@ -86,13 +82,19 @@ public class GalleryLargeTouchPicFragment extends BaseFragment implements View.O
                             TileBitmapDrawable.attachTileBitmapDrawable(mGalleryImage, resource, null, new TileBitmapDrawable.OnInitializeListener() {
                                 @Override
                                 public void onStartInitialization() {
-                                    mGalleryProgress.setVisibility(View.VISIBLE);
+                                    if (mGalleryProgress != null) {
+                                        mGalleryProgress.setVisibility(View.VISIBLE);
+                                    }
                                 }
 
                                 @Override
                                 public void onEndInitialization() {
-                                    mGalleryProgress.setVisibility(View.GONE);
-                                    mGalleryImage.setVisibility(View.VISIBLE);
+                                    if (mGalleryProgress != null) {
+                                        mGalleryProgress.setVisibility(View.GONE);
+                                    }
+                                    if (mGalleryImage != null) {
+                                        mGalleryImage.setVisibility(View.VISIBLE);
+                                    }
                                     if (mOnPicLoadingListener != null) {
                                         mOnPicLoadingListener.onPicLoadingEnd();
                                     }
@@ -100,7 +102,9 @@ public class GalleryLargeTouchPicFragment extends BaseFragment implements View.O
 
                                 @Override
                                 public void onError(Exception ex) {
-                                    mGalleryProgress.setVisibility(View.GONE);
+                                    if (mGalleryProgress != null) {
+                                        mGalleryProgress.setVisibility(View.GONE);
+                                    }
                                 }
                             });
                         }
@@ -116,12 +120,16 @@ public class GalleryLargeTouchPicFragment extends BaseFragment implements View.O
                             try {
                                 GifDrawable gifDrawable = new GifDrawable(resource);
                                 mGalleryGifImage.setImageDrawable(gifDrawable);
-                                mGalleryGifImage.setVisibility(View.VISIBLE);
-                                mGalleryProgress.setVisibility(View.GONE);
+                                if (mGalleryGifImage != null) {
+                                    mGalleryGifImage.setVisibility(View.VISIBLE);
+                                }
+                                if (mGalleryProgress != null) {
+                                    mGalleryProgress.setVisibility(View.GONE);
+                                }
                                 if (mOnPicLoadingListener != null) {
                                     mOnPicLoadingListener.onPicLoadingEnd();
                                 }
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 mGalleryProgress.setVisibility(View.GONE);
                             }
@@ -137,6 +145,10 @@ public class GalleryLargeTouchPicFragment extends BaseFragment implements View.O
         if (mGalleryGifImage != null) {
             mGalleryGifImage.setImageDrawable(null);
             mGalleryGifImage = null;
+        }
+        if (mGalleryImage != null) {
+            mGalleryImage.setImageDrawable(null);
+            mGalleryImage = null;
         }
     }
 

@@ -15,11 +15,10 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.shine.look.weibo.R;
+import com.shine.look.weibo.bean.User;
 import com.shine.look.weibo.medel.BaseModel;
 import com.shine.look.weibo.medel.UserModel;
 import com.shine.look.weibo.ui.adapter.NavigationAdapter;
-import com.shine.look.weibo.ui.utils.CircleTransformation;
-import com.shine.weibosdk.openapi.models.User;
 
 /**
  * User:Shine
@@ -98,8 +97,7 @@ public class NavigationMenuView extends ListView implements View.OnClickListener
             Glide.with(getContext())
                     .load(avatarUrl)
                     .override(mAvatarSize, mAvatarSize)
-                    .centerCrop()
-                    .transform(new CircleTransformation(getContext()))
+                    .fitCenter()
                     .into(mIvUserProfilePhoto);
             mIvUserProfilePhoto.setOnClickListener(this);
         }

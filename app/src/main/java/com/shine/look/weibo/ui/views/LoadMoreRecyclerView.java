@@ -51,7 +51,6 @@ public class LoadMoreRecyclerView extends RecyclerView {
                 }
                 if (lastVisibleItem + 1 >= totalItemCount && dy > 0) {
                     isLoading = true;
-                    ((HomeWeiboAdapter) getAdapter()).addLoading();
                     if (mEndListener != null) {
                         mEndListener.onEnd();
                     }
@@ -66,11 +65,10 @@ public class LoadMoreRecyclerView extends RecyclerView {
 
     public void setCloseLoading() {
         this.isLoading = false;
-        ((HomeWeiboAdapter) getAdapter()).removeLoading();
     }
 
-    public OnRefreshEndListener getEndListener() {
-        return mEndListener;
+    public void setLoading(boolean boo) {
+        this.isLoading = boo;
     }
 
     public void setOnRefreshEndListener(OnRefreshEndListener endListener) {
